@@ -1,0 +1,10 @@
+node_modules/
+.cache/
+dist/_metadata/
+*.zip
+*.crx
+*.pem
+test-results/
+playwright-report/
+.DS_Store
+Thumbs.db

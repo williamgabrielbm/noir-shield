@@ -1,0 +1,21 @@
+{
+  "name": "noir-shield",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "refresh": "node scripts/build.mjs --refresh",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "e2e": "node tests/e2e.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.321",
+    "esbuild": "^0.25.12",
+    "playwright": "^1.64.1",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.9.3"
+  }
+}
