@@ -10,6 +10,7 @@ export type CustomRule = {domain:string; selector:string};
 export type CustomList = {id:string; slot:number; name:string; url:string; enabled:boolean; updatedAt?:number; error?:string; ruleCount?:number};
 export type Settings = {
   enabled:boolean; level:'standard'|'aggressive'; youtube:boolean; cosmetics:boolean;
+  youtubeDebug?:boolean;
   allowedSites:string[]; customRules:CustomRule[]; customNetwork:string[];
   lists:Record<ListId,boolean>; customLists:CustomList[];
   listMeta:Record<string,{updatedAt?:number; error?:string; ruleCount?:number; duplicates?:number}>;

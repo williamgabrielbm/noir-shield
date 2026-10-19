@@ -1,0 +1,29 @@
+{
+  "extensionId": "ffbkploheacefblajbinkeafmnhnjnmb",
+  "staticBlocked": true,
+  "matchedAfterStatic": 1,
+  "pageCount": 1,
+  "listUpdated": true,
+  "listOffAllowed": true,
+  "listOnBlocked": true,
+  "blocked": true,
+  "networkHit": false,
+  "cosmetic": "none",
+  "allowed": true,
+  "visible": true,
+  "offAllowed": true,
+  "youtubeSkip": true,
+  "youtubeCosmetic": true,
+  "youtubeSpa": true,
+  "pickerSaved": true,
+  "popupLoaded": true,
+  "popupPowerOff": true,
+  "popupPowerOn": true,
+  "customList": {
+    "ok": true
+  },
+  "exported": true,
+  "imported": true,
+  "persistentSite": true,
+  "consoleErrors": []
+}

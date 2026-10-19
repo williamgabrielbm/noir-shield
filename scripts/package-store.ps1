@@ -23,7 +23,8 @@ if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
   throw "A pasta de destino não existe: $parent"
 }
 
-$files = @('manifest.json', 'background.js', 'content.js', 'popup.html', 'popup.js', 'options.html', 'options.js', 'ui.css', 'README.md', 'PRIVACY.md', 'LICENSE')
+$files = @('manifest.json', 'background.js', 'content.js', 'youtube-main.js', 'popup.html', 'popup.js', 'options.html', 'options.js', 'ui.css', 'README.md', 'PRIVACY.md', 'LICENSE')
+$files += Get-ChildItem -LiteralPath (Join-Path $dist 'docs') -File -Recurse | ForEach-Object { [IO.Path]::GetRelativePath($dist, $_.FullName) }
 $files += Get-ChildItem -LiteralPath (Join-Path $dist 'icons') -File -Recurse | ForEach-Object { [IO.Path]::GetRelativePath($dist, $_.FullName) }
 $files += Get-ChildItem -LiteralPath (Join-Path $dist 'rules') -File -Recurse | ForEach-Object { [IO.Path]::GetRelativePath($dist, $_.FullName) }
 foreach ($relative in $files) {
@@ -58,6 +59,9 @@ try {
   $manifestEntry = $verify.GetEntry('manifest.json')
   $reader = [IO.StreamReader]::new($manifestEntry.Open())
   try { $packedManifest = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
+  foreach ($script in @($packedManifest.content_scripts | ForEach-Object { $_.js }) + @($packedManifest.background.service_worker)) {
+    if (-not ($names -contains $script)) { throw "Script declarado no manifest ausente do pacote: $script" }
+  }
   if (($packedManifest.permissions -contains 'declarativeNetRequestFeedback') -or -not ($packedManifest.permissions -contains 'activeTab')) {
     throw 'Pacote inválido: permissões de publicação incorretas.'
   }

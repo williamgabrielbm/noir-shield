@@ -1,0 +1,1456 @@
+{
+  "date": "2026-10-19T23:38:22.761Z",
+  "browser": "155.0.4283.62",
+  "samples": [
+    {
+      "enabled": false,
+      "snapshots": [
+        {
+          "time": 0.974019,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 1.988856,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 3.003323,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 4.012831,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 5.017473,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 6.026236,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 7.052161,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 8.064928,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        }
+      ],
+      "errors": [],
+      "requests": [
+        {
+          "host": "www.youtube.com",
+          "path": "/watch",
+          "type": "document"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/base.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAAAEACEBK/d=1/br=1/rs=AGKMywFcRu15kXCbb0UB14_r6NgWtvgwww/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/web-animations-next-lite.min.vflset/web-animations-next-lite.min.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/custom-elements-es5-adapter.vflset/custom-elements-es5-adapter.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/webcomponents-sd.vflset/webcomponents-sd.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/intersection-observer.min.vflset/intersection-observer.min.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/scheduler.vflset/scheduler.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/www-i18n-constants-pt_BR.vflset/www-i18n-constants.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/www-player.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/cssbin/www-main-desktop-watch-page-skeleton.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/cssbin/www-main-desktop-player-skeleton.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/cssbin/www-onepick.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/ss/k=ytmainappweb.kevlar_base.A2y_LrdHZ7w.L.B1.O/am=AAAAAAFgCGBP/d=0/br=1/rs=AGKMywGG0aPMcMqEMFQoXzDsfBOqS9bSLA",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/manifest.webmanifest",
+          "type": "manifest"
+        },
+        {
+          "host": "rr2---sn-2obg05-co.googlevideo.com",
+          "path": "/generate_204",
+          "type": "other"
+        },
+        {
+          "host": "rr3---sn-bg0e6ner.c.youtube.com",
+          "path": "/generate_204",
+          "type": "other"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/offline.js",
+          "type": "script"
+        },
+        {
+          "host": "rr2---sn-2obg05-co.googlevideo.com",
+          "path": "/videoplayback",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/remote.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/miniplayer.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/captions.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/endscreen.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/annotations_module.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/spf.vflset/spf.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/network.vflset/network.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/qoe",
+          "type": "fetch"
+        },
+        {
+          "host": "rr2---sn-5hneknek.googlevideo.com",
+          "path": "/videoplayback",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/playback",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/ptracking",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/pagead/viewthroughconversion/962985656/",
+          "type": "fetch"
+        },
+        {
+          "host": "googleads.g.doubleclick.net",
+          "path": "/pagead/id",
+          "type": "xhr"
+        },
+        {
+          "host": "googleads.g.doubleclick.net",
+          "path": "/pagead/viewthroughconversion/962985656/",
+          "type": "fetch"
+        },
+        {
+          "host": "static.doubleclick.net",
+          "path": "/instream/ad_status.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/lottie-light.vflset/lottie-light.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/generate_204",
+          "type": "image"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/jnn/v1/GenerateIT",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/atr",
+          "type": "xhr"
+        },
+        {
+          "host": "youtube.com",
+          "path": "/",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/timedtext",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAAAEACEBK/d=1/exm=kevlar_base_module,kevlar_base_sync_mod_chunk,kevlar_main_module/ed=1/br=1/rs=AGKMywFcRu15kXCbb0UB14_r6NgWtvgwww/m=QlbBce,De8mUc",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAAAEACEBK/d=1/exm=De8mUc,QlbBce,kevlar_base_module,kevlar_base_sync_mod_chunk,kevlar_main_module/ed=1/br=1/rs=AGKMywFcRu15kXCbb0UB14_r6NgWtvgwww/m=yTIahe",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/youtubei/v1/log_event",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/img/favicon_144x144.png",
+          "type": "other"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/watchtime",
+          "type": "xhr"
+        }
+      ],
+      "networkFailures": [
+        {
+          "host": "rr2---sn-5hneknek.googlevideo.com",
+          "path": "/videoplayback",
+          "error": "net::ERR_NAME_NOT_RESOLVED"
+        },
+        {
+          "host": "googleads.g.doubleclick.net",
+          "path": "/pagead/viewthroughconversion/962985656/",
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "host": "i.ytimg.com",
+          "path": "/vi/V7nMy12ZN_M/hqdefault.jpg",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "host": "i.ytimg.com",
+          "path": "/vi/8zfM8e9EsmQ/hqdefault.jpg",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "host": "i.ytimg.com",
+          "path": "/vi/U_vRyvGn9wo/hqdefault.jpg",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "host": "i.ytimg.com",
+          "path": "/vi/Cv4SyBVeUWA/hqdefault.jpg",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "host": "i.ytimg.com",
+          "path": "/vi/M6ZjMWLqJvM/hqdefault.jpg",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "dnr": [
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        },
+        {
+          "ruleId": 900000,
+          "rulesetId": "_dynamic"
+        }
+      ]
+    },
+    {
+      "enabled": true,
+      "snapshots": [
+        {
+          "time": 2.885715,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 3.932938,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 4.942722,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 5.949576,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 6.958484,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 7.979158,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 8.989429,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        },
+        {
+          "time": 9.999194,
+          "paused": false,
+          "readyState": 4,
+          "error": null,
+          "ad": false,
+          "status": "OK",
+          "adKeys": []
+        }
+      ],
+      "errors": [],
+      "requests": [
+        {
+          "host": "www.youtube.com",
+          "path": "/watch",
+          "type": "document"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/base.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAAAEACEBK/d=1/br=1/rs=AGKMywFcRu15kXCbb0UB14_r6NgWtvgwww/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/web-animations-next-lite.min.vflset/web-animations-next-lite.min.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/custom-elements-es5-adapter.vflset/custom-elements-es5-adapter.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/webcomponents-sd.vflset/webcomponents-sd.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/intersection-observer.min.vflset/intersection-observer.min.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/scheduler.vflset/scheduler.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/www-i18n-constants-pt_BR.vflset/www-i18n-constants.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/www-player.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/cssbin/www-main-desktop-watch-page-skeleton.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/cssbin/www-main-desktop-player-skeleton.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/cssbin/www-onepick.css",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/ss/k=ytmainappweb.kevlar_base.A2y_LrdHZ7w.L.B1.O/am=AAAAAAFgCGBP/d=0/br=1/rs=AGKMywGG0aPMcMqEMFQoXzDsfBOqS9bSLA",
+          "type": "stylesheet"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/manifest.webmanifest",
+          "type": "manifest"
+        },
+        {
+          "host": "rr2---sn-2obg05-co.googlevideo.com",
+          "path": "/generate_204",
+          "type": "other"
+        },
+        {
+          "host": "rr3---sn-bg0e6ner.c.youtube.com",
+          "path": "/generate_204",
+          "type": "other"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/offline.js",
+          "type": "script"
+        },
+        {
+          "host": "rr2---sn-2obg05-co.googlevideo.com",
+          "path": "/videoplayback",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/remote.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/miniplayer.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/captions.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/endscreen.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/player/c271e571/player_es6.vflset/pt_BR/annotations_module.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/spf.vflset/spf.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/network.vflset/network.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/qoe",
+          "type": "fetch"
+        },
+        {
+          "host": "googleads.g.doubleclick.net",
+          "path": "/pagead/id",
+          "type": "xhr"
+        },
+        {
+          "host": "rr4---sn-5hnednss.googlevideo.com",
+          "path": "/videoplayback",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/playback",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/ptracking",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/pagead/viewthroughconversion/962985656/",
+          "type": "fetch"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/generate_204",
+          "type": "image"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/img/favicon_144x144.png",
+          "type": "other"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/jnn/v1/GenerateIT",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/timedtext",
+          "type": "xhr"
+        },
+        {
+          "host": "static.doubleclick.net",
+          "path": "/instream/ad_status.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/desktop/2fe123f7/jsbin/lottie-light.vflset/lottie-light.js",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/atr",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/youtubei/v1/log_event",
+          "type": "xhr"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAAAEACEBK/d=1/exm=kevlar_base_module,kevlar_base_sync_mod_chunk,kevlar_main_module/ed=1/br=1/rs=AGKMywFcRu15kXCbb0UB14_r6NgWtvgwww/m=QlbBce,De8mUc",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAAAEACEBK/d=1/exm=De8mUc,QlbBce,kevlar_base_module,kevlar_base_sync_mod_chunk,kevlar_main_module/ed=1/br=1/rs=AGKMywFcRu15kXCbb0UB14_r6NgWtvgwww/m=yTIahe",
+          "type": "script"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/api/stats/watchtime",
+          "type": "xhr"
+        }
+      ],
+      "networkFailures": [
+        {
+          "host": "googleads.g.doubleclick.net",
+          "path": "/pagead/id",
+          "error": "net::ERR_BLOCKED_BY_CLIENT"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/ptracking",
+          "error": "net::ERR_BLOCKED_BY_CLIENT"
+        },
+        {
+          "host": "www.youtube.com",
+          "path": "/pagead/viewthroughconversion/962985656/",
+          "error": "net::ERR_BLOCKED_BY_CLIENT"
+        },
+        {
+          "host": "rr4---sn-5hnednss.googlevideo.com",
+          "path": "/videoplayback",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "host": "static.doubleclick.net",
+          "path": "/instream/ad_status.js",
+          "error": "net::ERR_BLOCKED_BY_CLIENT"
+        }
+      ],
+      "dnr": [
+        {
+          "ruleId": 1,
+          "rulesetId": "youtube"
+        },
+        {
+          "ruleId": 1601,
+          "rulesetId": "easyprivacy"
+        },
+        {
+          "ruleId": 550,
+          "rulesetId": "easylist"
+        },
+        {
+          "ruleId": 2,
+          "rulesetId": "youtube"
+        },
+        {
+          "ruleId": 1,
+          "rulesetId": "youtube"
+        }
+      ]
+    }
+  ]
+}

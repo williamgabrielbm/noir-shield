@@ -22,7 +22,7 @@ async function render(){
   $('youtube-state').textContent=s.youtube?'Ativo':'Desativado';
   $('filters-count').textContent=`${LISTS.filter(l=>s.lists[l.id]).length} listas ativas`;
   ($<HTMLSelectElement>('level')).value=s.level;
-  $('level-note').textContent=s.level==='aggressive'?'Tenta acelerar anúncios de vídeo detectados; pode afetar alguns players.':'Bloqueia requisições e oculta elementos publicitários conhecidos.';
+  $('level-note').textContent=s.level==='aggressive'?'Detecção mais rápida; preserva velocidade, áudio e posição do vídeo.':'Filtra dados publicitários reconhecidos e bloqueia requisições separáveis.';
   $('pick').toggleAttribute('disabled',!on||!tab?.id);
   $('youtube-card').classList.toggle('off',!s.youtube);
 }

@@ -71,6 +71,7 @@ try{
   const youtube=await context.newPage();await youtube.goto('https://www.youtube.com/watch?v=noirtest');
   await youtube.waitForFunction(()=>window.skips>0,{timeout:10000});
   const youtubeSkip=await youtube.evaluate(()=>window.skips>0);
+  await youtube.waitForFunction(()=>getComputedStyle(document.querySelector('ytd-display-ad-renderer')).display==='none');
   const youtubeCosmetic=await youtube.locator('ytd-display-ad-renderer').evaluate(el=>getComputedStyle(el).display==='none');
   await youtube.evaluate(()=>{history.pushState({},'','/watch?v=next');document.dispatchEvent(new Event('yt-navigate-finish'));});
   await youtube.waitForTimeout(250);

@@ -1,0 +1,82 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {chromium} from 'playwright';
+
+const root=path.resolve(import.meta.dirname,'..');
+const work=path.join(root,'work');await fs.mkdir(work,{recursive:true});
+const profile=await fs.mkdtemp(path.join(work,'yt-profile-'));
+const extension=path.join(root,'dist');
+const edge=process.env.NOIR_BROWSER==='edge';
+const context=await chromium.launchPersistentContext(profile,{headless:true,...(edge?{executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'}:{channel:'chromium'}),args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`]});
+const results=[];const errors=[];
+const check=(name,value)=>{assert.ok(value,name);results.push(name);};
+const fixture={videoDetails:{videoId:'fixture'},playabilityStatus:{status:'OK'},streamingData:{formats:[{url:'https://example.com/content'}]},adPlacements:[{adPlacementRenderer:{}}],playerAds:[{playerLegacyDesktopWatchAdsRenderer:{}}],adSlots:[{adSlotRenderer:{}}],captions:{keep:true}};
+try{
+ const worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');
+ const id=new URL(worker.url()).hostname;
+ const options=await context.newPage();await options.goto(`chrome-extension://${id}/options.html`);
+ const send=(type,extra={})=>options.evaluate(async({type,extra})=>{const r=await chrome.runtime.sendMessage({type,...extra});if(!r.ok)throw Error(r.error);return r.data;},{type,extra});
+ await send('SET',{patch:{enabled:true,youtube:true,level:'aggressive'}});
+ await context.route('https://www.youtube.com/**',route=>{
+  const url=new URL(route.request().url());
+  if(url.pathname.startsWith('/youtubei/'))return route.fulfill({contentType:'application/json',body:url.searchParams.has('broken')?'{broken':JSON.stringify(url.searchParams.has('live')?{...fixture,videoDetails:{videoId:'live',isLiveContent:true}}:fixture)});
+  return route.fulfill({contentType:'text/html',body:`<!doctype html><html><body><div id="movie_player"><video class="html5-main-video"></video><button class="ytp-ad-skip-button" onclick="window.skips=(window.skips||0)+1">Skip</button></div><ytd-display-ad-renderer>Ad</ytd-display-ad-renderer><ytd-statement-banner-renderer>Normal notice</ytd-statement-banner-renderer><script>window.ytInitialPlayerResponse=${JSON.stringify(fixture)};window.skips=0;</script></body></html>`});
+ });
+ const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+ const started=Date.now();await page.goto('https://www.youtube.com/watch?v=fixture');
+ await page.waitForFunction(()=>window.ytInitialPlayerResponse?.adPlacements.length===0);
+ const initializationMs=Date.now()-started;
+ check('MAIN bootstrap sanitizes recognized initial response',await page.evaluate(()=>window.ytInitialPlayerResponse===window.ytInitialPlayerResponse&&window.ytInitialPlayerResponse.captions.keep));
+ const decoded=await page.evaluate(async()=>{
+   const response=await fetch('/youtubei/v1/player'),clone=response.clone();
+   const data=await response.json(),text=await clone.text();let twice=false;try{await response.json();}catch{twice=true;}
+   return {isResponse:response instanceof Response,status:response.status,url:response.url,bodyUsed:response.bodyUsed,slots:data.adSlots.length,text:JSON.parse(text).adPlacements.length,twice,formats:data.streamingData.formats.length};
+ });
+ check('fetch json/text/clone preserve Response and body consumption',decoded.isResponse&&decoded.status===200&&decoded.url.endsWith('/youtubei/v1/player')&&decoded.bodyUsed&&decoded.slots===0&&decoded.text===0&&decoded.twice&&decoded.formats===1);
+ check('unrelated API is untouched',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/next')).json()).adSlots.length===1));
+ check('live response is untouched',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/player?live')).json()).adSlots.length===1));
+ check('malformed JSON text stays exact',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/player?broken')).text())==='{broken'));
+ check('malformed JSON still rejects json()',await page.evaluate(async()=>{try{await(await fetch('/youtubei/v1/player?broken')).json();return false;}catch{return true;}}));
+ check('aborted fetch retains rejection',await page.evaluate(async()=>{const controller=new AbortController();controller.abort();try{await fetch('/youtubei/v1/player',{signal:controller.signal});return false;}catch(e){return e.name==='AbortError';}}));
+ const xhr=await page.evaluate(async()=>{
+  const read=(type,url)=>new Promise((resolve,reject)=>{const request=new XMLHttpRequest();request.open('GET',url);request.responseType=type;request.onerror=reject;request.onload=()=>{let invalid=false;if(type==='json')try{void request.responseText;}catch(e){invalid=e.name==='InvalidStateError';}resolve({status:request.status,data:type==='json'?request.response:JSON.parse(request.responseText),same:request.response===request.response,invalid});};request.send();});
+  return {text:await read('text','/youtubei/v1/player'),json:await read('json','/youtubei/v1/player'),other:await read('json','/youtubei/v1/next')};
+ });
+ assert.ok(xhr.text.status===200&&xhr.text.data.adSlots.length===0&&xhr.json.data.adSlots.length===0&&xhr.json.same===xhr.other.same&&xhr.json.invalid&&xhr.other.data.adSlots.length===1,JSON.stringify(xhr));check('XHR text/json preserve status and native getter behavior',true);
+ await page.waitForFunction(()=>getComputedStyle(document.querySelector('ytd-display-ad-renderer')).display==='none');
+ check('cosmetics preserve normal notices',await page.locator('ytd-statement-banner-renderer').isVisible());
+ await page.waitForTimeout(1200);check('normal video does not trigger skip',await page.evaluate(()=>window.skips===0));
+ await page.evaluate(()=>document.querySelector('#movie_player').classList.add('ad-showing'));
+ await page.waitForFunction(()=>window.skips>0);
+ check('native skip on confirmed ad',true);
+ await page.waitForFunction(()=>window.skips>=3);await page.waitForTimeout(1400);check('skip attempts are bounded',await page.evaluate(()=>window.skips===3));
+ await page.evaluate(()=>{document.querySelector('button').hidden=true;const v=document.querySelector('video');window.before={time:v.currentTime,rate:v.playbackRate,muted:v.muted};});
+ await page.waitForTimeout(1200);
+ check('unskippable ad never seeks/mutes/accelerates',await page.evaluate(()=>{const v=document.querySelector('video');return v.currentTime===window.before.time&&v.playbackRate===window.before.rate&&v.muted===window.before.muted;}));
+ await page.evaluate(()=>{document.dispatchEvent(new Event('yt-navigate-start'));document.querySelector('#movie_player').outerHTML='<div id="movie_player" class="ad-showing"><button class="ytp-ad-skip-button" onclick="window.skips++">Skip next</button></div>';history.pushState({},'','/shorts/fixture');document.dispatchEvent(new Event('yt-navigate-finish'));});
+ await page.waitForFunction(()=>window.skips>3);check('SPA discovers replaced player',true);
+ await send('SET',{patch:{cosmetics:false}});
+ await page.waitForFunction(()=>getComputedStyle(document.querySelector('ytd-display-ad-renderer')).display!=='none');check('cosmetics toggle honored',true);
+ await send('TOGGLE_SITE',{domain:'youtube.com'});
+ await page.waitForFunction(()=>!Object.getOwnPropertyDescriptor(window,'ytInitialPlayerResponse')?.get);
+ check('allowlist restores original bootstrap data',await page.evaluate(()=>window.ytInitialPlayerResponse.adSlots.length===1));
+ check('allowlist disables fetch sanitization',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/player')).json()).adSlots.length===1));
+ check('allowlist restores native XHR getter',await page.evaluate(()=>new Promise(resolve=>{const xhr=new XMLHttpRequest();xhr.open('GET','/youtubei/v1/player');xhr.responseType='json';xhr.onload=()=>resolve(xhr.response.adSlots.length===1);xhr.send();})));
+ const stopped=await page.evaluate(()=>window.skips);await page.waitForTimeout(1400);check('allowlist stops observers/timers from clicking',await page.evaluate(()=>window.skips)===stopped);
+ const match=await options.evaluate(async()=>chrome.declarativeNetRequest.testMatchOutcome({url:'https://googleads.g.doubleclick.net/pagead/id',initiator:'https://www.youtube.com',type:'xmlhttprequest'}));
+ check('DNR allowlist overrides static ad rules',match.matchedRules.some(r=>r.rulesetId==='_dynamic'&&r.ruleId>=700000));
+ await send('TOGGLE_SITE',{domain:'youtube.com'});await send('SET',{patch:{youtube:false}});
+ await page.waitForFunction(()=>!Object.getOwnPropertyDescriptor(window,'ytInitialPlayerResponse')?.get);
+ check('YouTube toggle disables dedicated ruleset',await options.evaluate(async()=>!(await chrome.declarativeNetRequest.getEnabledRulesets()).includes('youtube')));
+ await send('SET',{patch:{youtube:true,enabled:false}});
+ check('global pause leaves player data unchanged',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/player')).json()).adSlots.length===1));
+ await send('SET',{patch:{enabled:true}});await page.reload();await page.waitForFunction(()=>window.ytInitialPlayerResponse.adSlots.length===0);
+ await page.evaluate(()=>{const video=document.querySelector('video');video.src='data:video/mp4;base64,AAAA';video.load();});
+ await page.waitForFunction(()=>!!document.querySelector('video').error);
+ await page.waitForFunction(()=>!Object.getOwnPropertyDescriptor(window,'ytInitialPlayerResponse')?.get);
+ check('media error releases hooks without reload',await page.evaluate(()=>performance.getEntriesByType('navigation').length===1&&window.ytInitialPlayerResponse.adSlots.length===1));
+ check('page has no uncaught errors',errors.length===0);
+ const report={browser:await context.browser().version(),edge,initializationMs,passed:results.length,results,errors,scope:'Synthetic fixtures; does not establish live ad blocking effectiveness.'};
+ await fs.writeFile(path.join(work,`youtube-e2e-${edge?'edge':'chromium'}.json`),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+}finally{await context.close();}

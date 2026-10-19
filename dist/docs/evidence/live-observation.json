@@ -1,0 +1,239 @@
+{
+  "date": "2026-10-19T23:29:49.471Z",
+  "title": "Me at the zoo - YouTube",
+  "playerKeys": [
+    "responseContext",
+    "playabilityStatus",
+    "streamingData",
+    "playbackTracking",
+    "captions",
+    "videoDetails",
+    "annotations",
+    "playerConfig",
+    "microformat",
+    "cards",
+    "trackingParams",
+    "messages",
+    "adBreakHeartbeatParams",
+    "frameworkUpdates"
+  ],
+  "status": "OK",
+  "adKeys": [],
+  "requests": [
+    {
+      "host": "www.youtube.com",
+      "path": "/watch",
+      "type": "document"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/player_es6.vflset/pt_BR/base.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAQAAACEBK/d=1/br=1/rs=AGKMywEZptoEQC8jSGf_6eX-_RUtkTJztQ/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/web-animations-next-lite.min.vflset/web-animations-next-lite.min.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/custom-elements-es5-adapter.vflset/custom-elements-es5-adapter.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/webcomponents-sd.vflset/webcomponents-sd.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/intersection-observer.min.vflset/intersection-observer.min.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/scheduler.vflset/scheduler.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/www-i18n-constants-pt_BR.vflset/www-i18n-constants.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/www-player.css",
+      "type": "stylesheet"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/cssbin/www-main-desktop-watch-page-skeleton.css",
+      "type": "stylesheet"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/cssbin/www-main-desktop-player-skeleton.css",
+      "type": "stylesheet"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/cssbin/www-onepick.css",
+      "type": "stylesheet"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/_/ytmainappweb/_/ss/k=ytmainappweb.kevlar_base.A2y_LrdHZ7w.L.B1.O/am=AAAAQABgCGBP/d=0/br=1/rs=AGKMywEfxXmg2wSeD4zrhNVCncMayFRkjg",
+      "type": "stylesheet"
+    },
+    {
+      "host": "rr3---sn-bg0e6ner.googlevideo.com",
+      "path": "/generate_204",
+      "type": "other"
+    },
+    {
+      "host": "rr3---sn-bg0e6ner.c.youtube.com",
+      "path": "/generate_204",
+      "type": "other"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/spf.vflset/spf.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/network.vflset/network.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/player_es6.vflset/pt_BR/offline.js",
+      "type": "script"
+    },
+    {
+      "host": "rr3---sn-bg0e6ner.googlevideo.com",
+      "path": "/videoplayback",
+      "type": "fetch"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/player_es6.vflset/pt_BR/remote.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/player_es6.vflset/pt_BR/miniplayer.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/player_es6.vflset/pt_BR/captions.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/player_es6.vflset/pt_BR/endscreen.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/player_es6.vflset/pt_BR/annotations_module.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/api/stats/qoe",
+      "type": "fetch"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/generate_204",
+      "type": "image"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/api/jnn/v1/GenerateIT",
+      "type": "xhr"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/api/timedtext",
+      "type": "xhr"
+    },
+    {
+      "host": "googleads.g.doubleclick.net",
+      "path": "/pagead/id",
+      "type": "xhr"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/api/stats/atr",
+      "type": "fetch"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/generate_204",
+      "type": "fetch"
+    },
+    {
+      "host": "static.doubleclick.net",
+      "path": "/instream/ad_status.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/desktop/2fe123f7/jsbin/lottie-light.vflset/lottie-light.js",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/search/audio/failure.mp3",
+      "type": "media"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/search/audio/no_input.mp3",
+      "type": "media"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/search/audio/open.mp3",
+      "type": "media"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/search/audio/success.mp3",
+      "type": "media"
+    },
+    {
+      "host": "youtube.com",
+      "path": "/",
+      "type": "fetch"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/youtubei/v1/log_event",
+      "type": "xhr"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAQAAACEBK/d=1/exm=kevlar_base_module,kevlar_base_sync_mod_chunk,kevlar_main_module/ed=1/br=1/rs=AGKMywEZptoEQC8jSGf_6eX-_RUtkTJztQ/m=QlbBce,De8mUc",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.Yr8Cp34MrMI.es5.O/am=AAAAQAAACEBK/d=1/exm=De8mUc,QlbBce,kevlar_base_module,kevlar_base_sync_mod_chunk,kevlar_main_module/ed=1/br=1/rs=AGKMywEZptoEQC8jSGf_6eX-_RUtkTJztQ/m=yTIahe",
+      "type": "script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/",
+      "type": "fetch"
+    }
+  ]
+}

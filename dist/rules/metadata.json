@@ -1,11 +1,11 @@
 {
-  "builtAt": "2026-10-16T12:44:19.113Z",
+  "builtAt": "2026-10-19T23:57:48.248Z",
   "lists": {
     "easylist": {
       "source": "https://easylist.to/easylist/easylist.txt",
       "networkRules": 4500,
       "cosmeticRules": 3000,
-      "networkSkipped": 5369,
+      "networkSkipped": 5368,
       "cosmeticSkipped": 0,
       "duplicates": 8
     },
@@ -13,7 +13,7 @@
       "source": "https://easylist.to/easylist/easyprivacy.txt",
       "networkRules": 4500,
       "cosmeticRules": 24,
-      "networkSkipped": 3629,
+      "networkSkipped": 3631,
       "cosmeticSkipped": 13,
       "duplicates": 14
     },
@@ -21,24 +21,24 @@
       "source": "https://filters.adtidy.org/extension/chromium/filters/2.txt",
       "networkRules": 4500,
       "cosmeticRules": 3000,
-      "networkSkipped": 19025,
-      "cosmeticSkipped": 797,
-      "duplicates": 53581
+      "networkSkipped": 19032,
+      "cosmeticSkipped": 799,
+      "duplicates": 54774
     },
     "adguard_tracking": {
       "source": "https://filters.adtidy.org/extension/chromium/filters/3.txt",
       "networkRules": 4500,
       "cosmeticRules": 196,
-      "networkSkipped": 231855,
+      "networkSkipped": 241833,
       "cosmeticSkipped": 80,
-      "duplicates": 30829
+      "duplicates": 30805
     },
     "adguard_pt": {
       "source": "https://filters.adtidy.org/extension/chromium/filters/9.txt",
-      "networkRules": 930,
+      "networkRules": 931,
       "cosmeticRules": 2933,
-      "networkSkipped": 1189,
-      "cosmeticSkipped": 619,
+      "networkSkipped": 1193,
+      "cosmeticSkipped": 623,
       "duplicates": 30
     }
   }

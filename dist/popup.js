@@ -41,7 +41,7 @@
     $("youtube-state").textContent = s.youtube ? "Ativo" : "Desativado";
     $("filters-count").textContent = `${LISTS.filter((l) => s.lists[l.id]).length} listas ativas`;
     $("level").value = s.level;
-    $("level-note").textContent = s.level === "aggressive" ? "Tenta acelerar an\xFAncios de v\xEDdeo detectados; pode afetar alguns players." : "Bloqueia requisi\xE7\xF5es e oculta elementos publicit\xE1rios conhecidos.";
+    $("level-note").textContent = s.level === "aggressive" ? "Detec\xE7\xE3o mais r\xE1pida; preserva velocidade, \xE1udio e posi\xE7\xE3o do v\xEDdeo." : "Filtra dados publicit\xE1rios reconhecidos e bloqueia requisi\xE7\xF5es separ\xE1veis.";
     $("pick").toggleAttribute("disabled", !on || !tab?.id);
     $("youtube-card").classList.toggle("off", !s.youtube);
   }

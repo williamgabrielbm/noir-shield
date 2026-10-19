@@ -1,20 +1,21 @@
-import {normalizeDomain,validSelector} from './shared';
+import {YoutubeEngine,YOUTUBE_SELECTORS} from './youtube/engine';
+import {getSettings,isAllowed,normalizeDomain,validSelector} from './shared';
 
 const domain=normalizeDomain(location.hostname);
 const STYLE_ID='noir-shield-cosmetic';
 const YT_STYLE_ID='noir-shield-youtube';
-const YT_SELECTORS=[
-  'ytd-display-ad-renderer','ytd-promoted-sparkles-web-renderer','ytd-promoted-video-renderer',
-  'ytd-in-feed-ad-layout-renderer','ytd-ad-slot-renderer','ytd-banner-promo-renderer',
-  'ytd-statement-banner-renderer','ytd-compact-promoted-video-renderer','ytd-reel-video-renderer[is-ad]',
-  '#player-ads','#masthead-ad','yt-mealbar-promo-renderer','.ytp-ad-overlay-container'
-];
+const youtubeEngine = new YoutubeEngine(()=>{removeStyle(STYLE_ID);removeStyle(YT_STYLE_ID);stopPicker();});
 let protectedPage=false;
-let youtubeEnabled=false;
-let aggressive=false;
-let observer:MutationObserver|undefined;
-let scheduled=false;
-let savedPlayer:{element:HTMLVideoElement;muted:boolean;rate:number}|undefined;
+let refreshVersion=0;
+let configVersion=0;
+async function earlyYoutubeConfig(){
+  const version=++configVersion;
+  try{
+    const settings=await getSettings();
+    if(version!==configVersion)return;
+    youtubeEngine.configure(settings.enabled&&settings.youtube&&!isAllowed(domain,settings.allowedSites)&&/(^|\.)youtube\.com$/.test(domain),settings.level==='aggressive',settings.youtubeDebug===true);
+  }catch{youtubeEngine.stop();}
+}
 
 function style(id:string,text:string){
   let node=document.getElementById(id) as HTMLStyleElement|null;
@@ -23,61 +24,26 @@ function style(id:string,text:string){
 }
 function removeStyle(id:string){document.getElementById(id)?.remove();}
 async function refresh(){
+  const version=++refreshVersion;
   try{
     const response=await chrome.runtime.sendMessage({type:'COSMETICS',host:domain});
+    if(version!==refreshVersion)return;
     if(!response?.ok)throw new Error(response?.error||'Sem resposta');
-    const data=response.data as {selectors:string[];enabled:boolean;youtube:boolean;aggressive:boolean};
+    const data=response.data as {selectors:string[];enabled:boolean;youtube:boolean;aggressive:boolean;cosmetics:boolean;youtubeDebug:boolean};
     protectedPage=data.enabled;
-    youtubeEnabled=data.enabled&&data.youtube&&/(^|\.)youtube\.com$/.test(domain);
-    aggressive=data.aggressive;
+    const youtubeEnabled=data.enabled&&data.youtube&&/(^|\.)youtube\.com$/.test(domain);
+
     const safe=data.selectors.filter(validSelector);
     if(protectedPage&&safe.length){
       const chunks:string[]=[];
       for(let i=0;i<safe.length;i+=100)chunks.push(`${safe.slice(i,i+100).join(',')} { display: none !important; }`);
       style(STYLE_ID,chunks.join('\n'));
     }else removeStyle(STYLE_ID);
-    if(youtubeEnabled){style(YT_STYLE_ID,`${YT_SELECTORS.join(',')} { display:none !important; }`);startYoutube();}
-    else {removeStyle(YT_STYLE_ID);stopYoutube();}
-  }catch{removeStyle(STYLE_ID);removeStyle(YT_STYLE_ID);stopYoutube();}
+    youtubeEngine.configure(youtubeEnabled,data.aggressive,data.youtubeDebug);
+    if(youtubeEnabled&&data.cosmetics)style(YT_STYLE_ID,`${YOUTUBE_SELECTORS.join(',')} { display:none !important; }`);
+    else removeStyle(YT_STYLE_ID);
+  }catch{if(version!==refreshVersion)return;removeStyle(STYLE_ID);removeStyle(YT_STYLE_ID);youtubeEngine.stop();}
 }
-function restorePlayer(){
-  if(savedPlayer){const {element,muted,rate}=savedPlayer;if(element.isConnected){element.muted=muted;element.playbackRate=rate;}savedPlayer=undefined;}
-}
-function inspectYoutube(){
-  scheduled=false;if(!youtubeEnabled)return;
-  const player=document.querySelector('#movie_player');
-  const adPlaying=!!player?.classList.contains('ad-showing');
-  if(!adPlaying){restorePlayer();return;}
-  const skip=player?.querySelector<HTMLButtonElement>('.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .ytp-skip-ad-button');
-  if(skip&&skip.getBoundingClientRect().width>0){skip.click();return;}
-  if(!aggressive){restorePlayer();return;}
-  const video=player?.querySelector<HTMLVideoElement>('video.html5-main-video');
-  if(!video)return;
-  if(!savedPlayer||savedPlayer.element!==video){restorePlayer();savedPlayer={element:video,muted:video.muted,rate:video.playbackRate};}
-  // The player itself reports this segment as an ad. This is a skip/acceleration attempt,
-  // not a counted network block; never seek or mute normal playback.
-  video.muted=true;
-  if(video.playbackRate<8)video.playbackRate=8;
-  if(Number.isFinite(video.duration)&&video.duration>1&&video.duration<180&&video.currentTime<video.duration-0.5){
-    try{video.currentTime=video.duration-0.3;}catch{}
-  }
-}
-function scheduleYoutube(){if(scheduled)return;scheduled=true;setTimeout(inspectYoutube,180);}
-function startYoutube(){
-  if(observer)return;
-  observer=new MutationObserver(scheduleYoutube);
-  observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','is-ad']});
-  document.addEventListener('yt-navigate-finish',scheduleYoutube);
-  window.addEventListener('popstate',scheduleYoutube);
-  scheduleYoutube();
-}
-function stopYoutube(){
-  observer?.disconnect();observer=undefined;
-  document.removeEventListener('yt-navigate-finish',scheduleYoutube);
-  window.removeEventListener('popstate',scheduleYoutube);
-  restorePlayer();
-}
-
 let picker:{overlay:HTMLDivElement;toolbar:HTMLDivElement;target:Element|null;move:(e:MouseEvent)=>void;click:(e:MouseEvent)=>void;key:(e:KeyboardEvent)=>void}|undefined;
 function selectorFor(element:Element):string{
   const segments:string[]=[];let current:Element|null=element;
@@ -137,4 +103,6 @@ function startPicker(){
   });
 }
 chrome.runtime.onMessage.addListener(message=>{if(message?.type==='REFRESH')refresh();if(message?.type==='START_PICK')startPicker();});
+chrome.storage.onChanged.addListener((changes,area)=>{if(area==='local'&&changes.settings){earlyYoutubeConfig();refresh();}});
+earlyYoutubeConfig();
 refresh();

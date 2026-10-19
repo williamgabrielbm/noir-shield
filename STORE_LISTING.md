@@ -12,7 +12,7 @@ Noir Shield é um bloqueador de anúncios de código aberto para Chrome e Edge. 
 
 Você pode pausar a proteção por site, escolher listas, adicionar regras e listas próprias, selecionar elementos para ocultar e exportar suas configurações. A interface é escura e compacta. As preferências ficam no seu navegador; não há conta ou telemetria própria.
 
-No YouTube, o Noir Shield tenta bloquear requisições publicitárias identificáveis, ocultar elementos promocionais e acionar o botão nativo de pular anúncios quando ele aparece. A entrega de anúncios pode mudar; anúncios inseridos no mesmo fluxo do vídeo podem continuar sendo reproduzidos. O modo agressivo pode afetar a reprodução em alguns casos. Não prometemos bloquear todos os anúncios do YouTube ou Twitch.
+No YouTube, o Noir Shield tenta bloquear requisições publicitárias identificáveis, filtrar estruturas publicitárias reconhecidas do player, ocultar elementos publicitários e acionar o botão nativo de pular anúncios quando ele aparece. A entrega de anúncios pode mudar; anúncios inseridos no mesmo fluxo do vídeo podem continuar sendo reproduzidos. O modo agressivo reduz o intervalo de detecção sem alterar a velocidade ou posição do vídeo. Não prometemos bloquear todos os anúncios do YouTube ou Twitch.
 
 As estatísticas de bloqueio dependem das informações que o navegador disponibiliza. Quando não existe uma contagem confiável, a interface mostra “indisponível”, em vez de inventar números.
 

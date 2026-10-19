@@ -1,6 +1,6 @@
 {
   "name": "noir-shield",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "license": "GPL-3.0-only",
@@ -9,7 +9,9 @@
     "refresh": "node scripts/build.mjs --refresh",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
-    "e2e": "node tests/e2e.mjs"
+    "e2e": "node tests/e2e.mjs",
+    "test:youtube": "node tests/youtube-e2e.mjs",
+    "test:youtube:live": "node tests/youtube-live.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.321",

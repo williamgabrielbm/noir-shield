@@ -138,7 +138,7 @@ async function handle(message:any,sender:chrome.runtime.MessageSender){
   const settings=await getSettings();
   switch(message?.type){
     case 'STATUS': return status(message.tabId,message.url);
-    case 'COSMETICS': return {selectors:await cosmeticsFor(message.host,settings),enabled:settings.enabled&&!isAllowed(message.host,settings.allowedSites),youtube:settings.youtube,aggressive:settings.level==='aggressive'};
+    case 'COSMETICS': return {selectors:await cosmeticsFor(message.host,settings),enabled:settings.enabled&&!isAllowed(message.host,settings.allowedSites),youtube:settings.youtube,cosmetics:settings.cosmetics,youtubeDebug:settings.youtubeDebug===true,aggressive:settings.level==='aggressive'};
     case 'SETTINGS': return settings;
     case 'SET':{
       const next={...settings,...message.patch};
@@ -206,7 +206,7 @@ async function handle(message:any,sender:chrome.runtime.MessageSender){
       const imported=message.settings;
       if(!imported||typeof imported!=='object')throw new Error('Configuração inválida.');
       const next:Settings={...DEFAULT_SETTINGS,enabled:imported.enabled!==false,level:imported.level==='aggressive'?'aggressive':'standard',youtube:imported.youtube!==false,cosmetics:imported.cosmetics!==false,
-        allowedSites:Array.isArray(imported.allowedSites)?imported.allowedSites.map(normalizeDomain).filter(Boolean).slice(0,100):[],
+        youtubeDebug:imported.youtubeDebug===true,allowedSites:Array.isArray(imported.allowedSites)?imported.allowedSites.map(normalizeDomain).filter(Boolean).slice(0,100):[],
         customRules:Array.isArray(imported.customRules)?imported.customRules.filter((r:any)=>normalizeDomain(r.domain)&&typeof r.selector==='string'&&parseCosmetic(`${normalizeDomain(r.domain)}##${r.selector}`)).slice(0,500):[],
         customNetwork:Array.isArray(imported.customNetwork)?imported.customNetwork.filter((r:any)=>typeof r==='string'&&parseNetwork(r)).slice(0,500):[],
         lists:{...DEFAULT_SETTINGS.lists,...imported.lists},customLists:[],listMeta:{}};

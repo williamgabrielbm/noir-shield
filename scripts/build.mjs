@@ -61,18 +61,18 @@ for(const [id,url] of LISTS){
   console.log(`${id}: ${compiled.rules.length} network, ${compiled.cosmetic.length} cosmetic, ${compiled.stats.duplicates} duplicates`);
 }
 const youtubeRules=[
-  '||youtube.com/pagead/',
-  '||youtube.com/api/stats/ads',
-  '||youtube.com/ptracking',
-  '||googleads.g.doubleclick.net/pagead/',
-  '||youtube.com/get_midroll_info'
-].map((line,i)=>({...compileList(line).rules[0],id:i+1,condition:{...compileList(line).rules[0].condition,initiatorDomains:['youtube.com']}}));
+  // Observed on a real watch page on 2026-10-19; these are ad infrastructure,
+  // not evidence that an entire video advertisement was blocked.
+  ['||googleads.g.doubleclick.net/pagead/id^', ['xmlhttprequest']],
+  ['||static.doubleclick.net/instream/ad_status.js^', ['script']]
+].map(([urlFilter,resourceTypes],i)=>({id:i+1,priority:1,action:{type:'block'},condition:{urlFilter,resourceTypes,initiatorDomains:['youtube.com']}}));
 await fs.writeFile(path.join(dist,'rules','youtube.json'),JSON.stringify(youtubeRules));
 await fs.writeFile(path.join(dist,'rules','allow-ids.json'),JSON.stringify(allowIds));
 await fs.writeFile(path.join(dist,'rules','metadata.json'),JSON.stringify(metadata,null,2));
 for(const name of ['manifest.json','popup.html','options.html','ui.css'])await fs.copyFile(path.join(root,'src',name),path.join(dist,name));
 for(const name of ['README.md','PRIVACY.md','LICENSE'])await fs.copyFile(path.join(root,name),path.join(dist,name));
-for(const [name,entry] of [['background','background.ts'],['content','content.ts'],['popup','popup.ts'],['options','options.ts']]){
+await fs.cp(path.join(root,'docs'),path.join(dist,'docs'),{recursive:true});
+for(const [name,entry] of [['background','background.ts'],['content','content.ts'],['youtube-main','youtube/main.ts'],['popup','popup.ts'],['options','options.ts']]){
   await build({entryPoints:[path.join(root,'src',entry)],outfile:path.join(dist,`${name}.js`),bundle:true,format:'iife',target:'chrome121',minify:false,logLevel:'warning'});
 }
 console.log(`Built ${dist}`);

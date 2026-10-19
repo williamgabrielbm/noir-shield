@@ -292,7 +292,7 @@
       case "STATUS":
         return status(message.tabId, message.url);
       case "COSMETICS":
-        return { selectors: await cosmeticsFor(message.host, settings), enabled: settings.enabled && !isAllowed(message.host, settings.allowedSites), youtube: settings.youtube, aggressive: settings.level === "aggressive" };
+        return { selectors: await cosmeticsFor(message.host, settings), enabled: settings.enabled && !isAllowed(message.host, settings.allowedSites), youtube: settings.youtube, cosmetics: settings.cosmetics, youtubeDebug: settings.youtubeDebug === true, aggressive: settings.level === "aggressive" };
       case "SETTINGS":
         return settings;
       case "SET": {
@@ -399,6 +399,7 @@
           level: imported.level === "aggressive" ? "aggressive" : "standard",
           youtube: imported.youtube !== false,
           cosmetics: imported.cosmetics !== false,
+          youtubeDebug: imported.youtubeDebug === true,
           allowedSites: Array.isArray(imported.allowedSites) ? imported.allowedSites.map(normalizeDomain).filter(Boolean).slice(0, 100) : [],
           customRules: Array.isArray(imported.customRules) ? imported.customRules.filter((r) => normalizeDomain(r.domain) && typeof r.selector === "string" && parseCosmetic(`${normalizeDomain(r.domain)}##${r.selector}`)).slice(0, 500) : [],
           customNetwork: Array.isArray(imported.customNetwork) ? imported.customNetwork.filter((r) => typeof r === "string" && parseNetwork(r)).slice(0, 500) : [],
