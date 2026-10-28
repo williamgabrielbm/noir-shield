@@ -13,7 +13,7 @@ async function earlyYoutubeConfig(){
   try{
     const settings=await getSettings();
     if(version!==configVersion)return;
-    youtubeEngine.configure(settings.enabled&&settings.youtube&&!isAllowed(domain,settings.allowedSites)&&/(^|\.)youtube\.com$/.test(domain),settings.level==='aggressive',settings.youtubeDebug===true);
+    youtubeEngine.configure(settings.enabled&&settings.youtube&&!isAllowed(domain,settings.allowedSites)&&/(^|\.)youtube\.com$/.test(domain),settings.level==='aggressive',settings.youtubeDebug===true,settings.youtubeLab);
   }catch{youtubeEngine.stop();}
 }
 
@@ -29,7 +29,7 @@ async function refresh(){
     const response=await chrome.runtime.sendMessage({type:'COSMETICS',host:domain});
     if(version!==refreshVersion)return;
     if(!response?.ok)throw new Error(response?.error||'Sem resposta');
-    const data=response.data as {selectors:string[];enabled:boolean;youtube:boolean;aggressive:boolean;cosmetics:boolean;youtubeDebug:boolean};
+    const data=response.data as {selectors:string[];enabled:boolean;youtube:boolean;aggressive:boolean;cosmetics:boolean;youtubeDebug:boolean;youtubeLab:{network:boolean;player:boolean;skip:boolean;cosmetics:boolean;probes:boolean}};
     protectedPage=data.enabled;
     const youtubeEnabled=data.enabled&&data.youtube&&/(^|\.)youtube\.com$/.test(domain);
 
@@ -39,8 +39,8 @@ async function refresh(){
       for(let i=0;i<safe.length;i+=100)chunks.push(`${safe.slice(i,i+100).join(',')} { display: none !important; }`);
       style(STYLE_ID,chunks.join('\n'));
     }else removeStyle(STYLE_ID);
-    youtubeEngine.configure(youtubeEnabled,data.aggressive,data.youtubeDebug);
-    if(youtubeEnabled&&data.cosmetics)style(YT_STYLE_ID,`${YOUTUBE_SELECTORS.join(',')} { display:none !important; }`);
+    youtubeEngine.configure(youtubeEnabled,data.aggressive,data.youtubeDebug,data.youtubeLab);
+    if(youtubeEnabled&&data.cosmetics&&data.youtubeLab?.cosmetics!==false)style(YT_STYLE_ID,`${YOUTUBE_SELECTORS.join(',')} { display:none !important; }`);
     else removeStyle(YT_STYLE_ID);
   }catch{if(version!==refreshVersion)return;removeStyle(STYLE_ID);removeStyle(YT_STYLE_ID);youtubeEngine.stop();}
 }

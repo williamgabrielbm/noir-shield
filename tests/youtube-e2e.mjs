@@ -2,24 +2,28 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {chromium} from 'playwright';
+import {installedChrome} from './chrome-installed.mjs';
+import {noirWorker,closeNative} from './native-browser.mjs';
 
 const root=path.resolve(import.meta.dirname,'..');
-const work=path.join(root,'work');await fs.mkdir(work,{recursive:true});
+const work=path.join(root,'work',process.env.NOIR_INSTALLED_CHROME==='1'?(process.env.NOIR_LABEL||'chrome-fixture-regression'):'');await fs.mkdir(work,{recursive:true});
 const profile=await fs.mkdtemp(path.join(work,'yt-profile-'));
-const extension=path.join(root,'dist');
+const extension=process.env.NOIR_EXTENSION_DIR||path.join(root,'dist');
 const edge=process.env.NOIR_BROWSER==='edge';
-const context=await chromium.launchPersistentContext(profile,{headless:true,...(edge?{executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'}:{channel:'chromium'}),args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`]});
+const context=process.env.NOIR_INSTALLED_CHROME==='1'?await installedChrome(profile,extension,true):await chromium.launchPersistentContext(profile,{headless:true,...(edge?{executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'}:{channel:'chromium'}),args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`]});
 const results=[];const errors=[];
 const check=(name,value)=>{assert.ok(value,name);results.push(name);};
 const fixture={videoDetails:{videoId:'fixture'},playabilityStatus:{status:'OK'},streamingData:{formats:[{url:'https://example.com/content'}]},adPlacements:[{adPlacementRenderer:{}}],playerAds:[{playerLegacyDesktopWatchAdsRenderer:{}}],adSlots:[{adSlotRenderer:{}}],captions:{keep:true}};
 try{
- const worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');
+ const worker=process.env.NOIR_INSTALLED_CHROME==='1'?await noirWorker(context):(context.serviceWorkers()[0]||await context.waitForEvent('serviceworker'));
  const id=new URL(worker.url()).hostname;
  const options=await context.newPage();await options.goto(`chrome-extension://${id}/options.html`);
  const send=(type,extra={})=>options.evaluate(async({type,extra})=>{const r=await chrome.runtime.sendMessage({type,...extra});if(!r.ok)throw Error(r.error);return r.data;},{type,extra});
  await send('SET',{patch:{enabled:true,youtube:true,level:'aggressive'}});
  await context.route('https://www.youtube.com/**',route=>{
   const url=new URL(route.request().url());
+  if(url.pathname==='/youtubei/v1/reel/reel_watch_sequence')return route.fulfill({contentType:'application/json',body:JSON.stringify({entries:[{command:{reelWatchEndpoint:{videoId:'content'}}},{command:{reelWatchEndpoint:{adClientParams:{isAd:true}}}}],continuationEndpoint:{keep:true}})});
+  if(url.pathname==='/youtubei/v1/get_watch')return route.fulfill({contentType:'application/json',body:JSON.stringify([{playerResponse:fixture},{watchNextResponse:{keep:true,adSlots:['content metadata']}}])});
   if(url.pathname.startsWith('/youtubei/'))return route.fulfill({contentType:'application/json',body:url.searchParams.has('broken')?'{broken':JSON.stringify(url.searchParams.has('live')?{...fixture,videoDetails:{videoId:'live',isLiveContent:true}}:fixture)});
   return route.fulfill({contentType:'text/html',body:`<!doctype html><html><body><div id="movie_player"><video class="html5-main-video"></video><button class="ytp-ad-skip-button" onclick="window.skips=(window.skips||0)+1">Skip</button></div><ytd-display-ad-renderer>Ad</ytd-display-ad-renderer><ytd-statement-banner-renderer>Normal notice</ytd-statement-banner-renderer><script>window.ytInitialPlayerResponse=${JSON.stringify(fixture)};window.skips=0;</script></body></html>`});
  });
@@ -29,12 +33,20 @@ try{
  const initializationMs=Date.now()-started;
  check('MAIN bootstrap sanitizes recognized initial response',await page.evaluate(()=>window.ytInitialPlayerResponse===window.ytInitialPlayerResponse&&window.ytInitialPlayerResponse.captions.keep));
  const decoded=await page.evaluate(async()=>{
-   const response=await fetch('/youtubei/v1/player'),clone=response.clone();
-   const data=await response.json(),text=await clone.text();let twice=false;try{await response.json();}catch{twice=true;}
-   return {isResponse:response instanceof Response,status:response.status,url:response.url,bodyUsed:response.bodyUsed,slots:data.adSlots.length,text:JSON.parse(text).adPlacements.length,twice,formats:data.streamingData.formats.length};
+   const response=await fetch('/youtubei/v1/player'),clone=response.clone(),bytesCopy=response.clone(),streamCopy=response.clone();
+   const data=await response.json(),text=await clone.text(),bytes=JSON.parse(new TextDecoder().decode(await bytesCopy.arrayBuffer())),stream=await new Response(streamCopy.body).json();let twice=false;try{await response.json();}catch{twice=true;}
+   return {byteSlots:bytes.adSlots.length,streamSlots:stream.adSlots.length,isResponse:response instanceof Response,status:response.status,url:response.url,bodyUsed:response.bodyUsed,slots:data.adSlots.length,text:JSON.parse(text).adPlacements.length,twice,formats:data.streamingData.formats.length};
  });
- check('fetch json/text/clone preserve Response and body consumption',decoded.isResponse&&decoded.status===200&&decoded.url.endsWith('/youtubei/v1/player')&&decoded.bodyUsed&&decoded.slots===0&&decoded.text===0&&decoded.twice&&decoded.formats===1);
+ check('fetch json/text/clone preserve Response and body consumption',decoded.byteSlots===0&&decoded.streamSlots===0&&decoded.isResponse&&decoded.status===200&&decoded.url.endsWith('/youtubei/v1/player')&&decoded.bodyUsed&&decoded.slots===0&&decoded.text===0&&decoded.twice&&decoded.formats===1);
  check('unrelated API is untouched',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/next')).json()).adSlots.length===1));
+ const spaPayload=await page.evaluate(async()=>{
+  const r=await fetch('/youtubei/v1/get_watch?prettyPrint=false'),a=r.clone(),b=r.clone();
+  const json=await r.json(),text=JSON.parse(await a.text()),stream=await new Response(b.body).json();
+  const xhr=await new Promise((resolve,reject)=>{const x=new XMLHttpRequest();x.open('POST','/youtubei/v1/get_watch');x.responseType='json';x.onload=()=>resolve(x.response);x.onerror=reject;x.send('{}');});
+  return {clean:[json,text,stream,xhr].every(v=>v[0].playerResponse.adPlacements.length===0&&v[0].playerResponse.adSlots.length===0),metadata:[json,text,stream,xhr].every(v=>v[1].watchNextResponse.keep&&v[1].watchNextResponse.adSlots[0]==='content metadata')};
+ });
+ check('real get_watch envelope filtered through fetch body readers and XHR',spaPayload.clean&&spaPayload.metadata);
+ check('Shorts sequence preserves content/continuation and removes explicit advertisement',await page.evaluate(async()=>{const r=await(await fetch('/youtubei/v1/reel/reel_watch_sequence')).json();return r.entries.length===1&&r.entries[0].command.reelWatchEndpoint.videoId==='content'&&r.continuationEndpoint.keep;}));
  check('live response is untouched',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/player?live')).json()).adSlots.length===1));
  check('malformed JSON text stays exact',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/player?broken')).text())==='{broken'));
  check('malformed JSON still rejects json()',await page.evaluate(async()=>{try{await(await fetch('/youtubei/v1/player?broken')).json();return false;}catch{return true;}}));
@@ -76,7 +88,17 @@ try{
  await page.waitForFunction(()=>!!document.querySelector('video').error);
  await page.waitForFunction(()=>!Object.getOwnPropertyDescriptor(window,'ytInitialPlayerResponse')?.get);
  check('media error releases hooks without reload',await page.evaluate(()=>performance.getEntriesByType('navigation').length===1&&window.ytInitialPlayerResponse.adSlots.length===1));
+ await page.evaluate(()=>{
+  document.querySelector('#movie_player').innerHTML='<video></video>';
+  document.dispatchEvent(new Event('yt-navigate-start'));
+  history.pushState({},'','/watch?v=after-error');document.dispatchEvent(new Event('yt-navigate-finish'));
+ });
+ await page.waitForFunction(()=>!!Object.getOwnPropertyDescriptor(window,'ytInitialPlayerResponse')?.get);
+ check('next explicit navigation re-arms filtering after previous media failure',await page.evaluate(async()=>(await(await fetch('/youtubei/v1/get_watch')).json())[0].playerResponse.adSlots.length===0));
+ await page.evaluate(()=>{const v=document.querySelector('video');Object.defineProperty(v,'paused',{configurable:true,value:false});});
+ await page.waitForTimeout(13500);
+ check('slow initial buffering does not disable filtering before playback starts',await page.evaluate(()=>!!Object.getOwnPropertyDescriptor(window,'ytInitialPlayerResponse')?.get));
  check('page has no uncaught errors',errors.length===0);
- const report={browser:await context.browser().version(),edge,initializationMs,passed:results.length,results,errors,scope:'Synthetic fixtures; does not establish live ad blocking effectiveness.'};
+ const report={browser:await context.browser().version(),installedChrome:context.chromeTestMetadata,edge,initializationMs,passed:results.length,results,errors,scope:'Synthetic fixtures; does not establish live ad blocking effectiveness.'};
  await fs.writeFile(path.join(work,`youtube-e2e-${edge?'edge':'chromium'}.json`),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
-}finally{await context.close();}
+}finally{if(process.env.NOIR_INSTALLED_CHROME==='1')await closeNative(context);else await context.close();}

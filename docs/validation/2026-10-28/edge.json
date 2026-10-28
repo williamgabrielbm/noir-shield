@@ -1,0 +1,269 @@
+{
+  "date": "2026-10-28",
+  "scope": "Two real Edge headless control/protected comparisons, muted; no seek, no synthetic response, no remote executable code.",
+  "midrollValidatedInObservedSessions": true,
+  "universalGuarantee": false,
+  "comparisons": [
+    {
+      "videoId": "0e3GPea1Tyg",
+      "browser": "156.0.4314.50",
+      "hidden": true,
+      "controlLabel": "hidden-midroll-beast-control-1",
+      "protectedLabel": "hidden-midroll-beast-protected-1",
+      "controlMidroll": {
+        "at": "2026-10-28T12:58:50.234Z",
+        "elapsed": 526.345,
+        "type": "mid-roll",
+        "priorContentSeconds": 518.490849,
+        "priorContentTime": 519.413665,
+        "target": "0e3GPea1Tyg",
+        "endedAt": "2026-10-28T12:58:56.705Z",
+        "resumedTime": 520.573106,
+        "resumedVideoId": "0e3GPea1Tyg",
+        "resumed": true
+      },
+      "controlAdSamples": [
+        {
+          "at": "2026-10-28T12:58:50.234Z",
+          "time": 0.473764,
+          "duration": 18.241,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T12:58:51.412Z",
+          "time": 1.651192,
+          "duration": 18.241,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T12:58:52.448Z",
+          "time": 2.687273,
+          "duration": 18.241,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T12:58:53.482Z",
+          "time": 3.722504,
+          "duration": 18.241,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T12:58:54.513Z",
+          "time": 4.752254,
+          "duration": 18.241,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T12:58:55.535Z",
+          "time": 5.775957,
+          "duration": 18.241,
+          "ready": 4,
+          "paused": false
+        }
+      ],
+      "protectedObservedContentSeconds": 951.050936,
+      "protectedStrictContinuousSeconds": 951.050936,
+      "protectedLastContentTime": 951.050936,
+      "protectedAds": 0,
+      "protectedErrorSamples": 0,
+      "protectedAntiAdblockSamples": 0,
+      "originalProtectedAdData": [
+        {
+          "at": "2026-10-28T12:51:53.827Z",
+          "endpoint": "/youtubei/v1/get_watch",
+          "http": 200,
+          "players": [
+            {
+              "videoId": "0e3GPea1Tyg",
+              "status": "OK",
+              "streamingData": true,
+              "adArrays": [
+                {
+                  "key": "adPlacements",
+                  "count": 11
+                },
+                {
+                  "key": "playerAds",
+                  "count": 1
+                },
+                {
+                  "key": "adSlots",
+                  "count": 6
+                }
+              ],
+              "placements": [
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 180000
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 300166
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 519633
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 631549
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 760713
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 831921
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 989900
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 1079006
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 1230246
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 1361400
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_END",
+                  "offsetMilliseconds": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "videoId": "9vKqVkMQHKk",
+      "browser": "156.0.4314.50",
+      "hidden": true,
+      "controlLabel": "hidden-midroll-playlist-control-1",
+      "protectedLabel": "hidden-midroll-playlist-protected-1",
+      "controlMidroll": {
+        "at": "2026-10-28T13:00:26.910Z",
+        "elapsed": 648.053,
+        "type": "mid-roll",
+        "priorContentSeconds": 623.524726,
+        "priorContentTime": 624.4207,
+        "target": "9vKqVkMQHKk",
+        "endedAt": "2026-10-28T13:00:34.478Z",
+        "resumedTime": 626.324856,
+        "resumedVideoId": "9vKqVkMQHKk",
+        "resumed": true
+      },
+      "controlAdSamples": [
+        {
+          "at": "2026-10-28T13:00:26.910Z",
+          "time": 0,
+          "duration": null,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T13:00:28.149Z",
+          "time": 0.924963,
+          "duration": 56.421,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T13:00:29.175Z",
+          "time": 1.951235,
+          "duration": 56.421,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T13:00:30.209Z",
+          "time": 2.984436,
+          "duration": 56.421,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T13:00:31.246Z",
+          "time": 4.022771,
+          "duration": 56.421,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T13:00:32.260Z",
+          "time": 5.036753,
+          "duration": 56.421,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T13:00:33.283Z",
+          "time": 6.058806,
+          "duration": 56.421,
+          "ready": 4,
+          "paused": false
+        }
+      ],
+      "protectedObservedContentSeconds": 1009.519667,
+      "protectedStrictContinuousSeconds": 1009.519667,
+      "protectedLastContentTime": 1009.519667,
+      "protectedAds": 0,
+      "protectedErrorSamples": 0,
+      "protectedAntiAdblockSamples": 0,
+      "originalProtectedAdData": [
+        {
+          "at": "2026-10-28T12:50:12.970Z",
+          "endpoint": "/youtubei/v1/get_watch",
+          "http": 200,
+          "players": [
+            {
+              "videoId": "9vKqVkMQHKk",
+              "status": "OK",
+              "streamingData": true,
+              "adArrays": [
+                {
+                  "key": "adPlacements",
+                  "count": 1
+                },
+                {
+                  "key": "playerAds",
+                  "count": 1
+                },
+                {
+                  "key": "adSlots",
+                  "count": 8
+                }
+              ],
+              "placements": [
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 625418
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "runtimeSha256": {
+    "youtube-main.js": "ded8d4c210fe9871203f65688488d485da6e00507718c5465d9e7dc541c2e9ba",
+    "content.js": "f3eb2fb0ebf18f6bb0ce6c3364f2ed52b1017c3f39cbada369fbd2de105d614c",
+    "background.js": "15e5f3cb66ccf086922943127e39b55c9ffb253a65844c31a38c1b74fb20ff92",
+    "popup.js": "16bcc87960075532a1d69b5d85237347427320d299d3425df49a93ff9357c18f",
+    "options.js": "d52cfa3e3b9b0e28e1f25d665e33afc9015eb629e314ad9ccc0b853382f94da5",
+    "youtube-lab.js": "828e4f220fa8dc9d64f4998e6bfd13a494536fdf0726744fb157079c10598b45"
+  }
+}

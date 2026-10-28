@@ -17,9 +17,37 @@ export function sanitizePlayer(value: unknown): unknown {
   }
   return result;
 }
+// get_watch returns [{playerResponse: ...}, {watchNextResponse: ...}].
+// Inspect only this explicit envelope; never prune arbitrary nested content.
+export function sanitizePlayerPayload(value: unknown): unknown {
+  const direct = sanitizePlayer(value);
+  if (direct !== value) return direct;
+  const envelope = (entry: unknown): unknown => {
+    if (!record(entry) || !record(entry.playerResponse)) return entry;
+    const next = sanitizePlayer(entry.playerResponse);
+    return next === entry.playerResponse ? entry : {...entry, playerResponse:next};
+  };
+  if (!Array.isArray(value)) {
+    const result = envelope(value);
+    if (!record(result) || !Array.isArray(result.entries)) return result;
+    const entries = result.entries.filter(entry => {
+      if (!record(entry) || !record(entry.command) || !record(entry.command.reelWatchEndpoint)) return true;
+      const params = entry.command.reelWatchEndpoint.adClientParams;
+      return !record(params) || params.isAd !== true;
+    });
+    return entries.length === result.entries.length ? result : {...result, entries};
+  }
+  let changed = false;
+  const next = value.map(entry => {
+    const result = envelope(entry);
+    changed ||= result !== entry;
+    return result;
+  });
+  return changed ? next : value;
+}
 export function playerEndpoint(input: unknown, base: string): boolean {
   try {
     const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input instanceof Request ? input.url : '', base);
-    return url.origin === new URL(base).origin && url.pathname === '/youtubei/v1/player';
+    return url.origin === new URL(base).origin && (url.pathname === '/youtubei/v1/player' || url.pathname === '/youtubei/v1/get_watch' || url.pathname === '/youtubei/v1/reel/reel_watch_sequence');
   } catch { return false; }
 }

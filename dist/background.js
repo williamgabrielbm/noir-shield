@@ -8,11 +8,13 @@
     { id: "adguard_tracking", name: "AdGuard Tracking Protection", url: "https://filters.adtidy.org/extension/chromium/filters/3.txt", defaultOn: false, kind: "trackers" },
     { id: "adguard_pt", name: "AdGuard Spanish/Portuguese", url: "https://filters.adtidy.org/extension/chromium/filters/9.txt", defaultOn: true, kind: "ads" }
   ];
+  var DEFAULT_YOUTUBE_LAB = { network: true, player: true, skip: true, cosmetics: true, probes: true };
   var DEFAULT_SETTINGS = {
     enabled: true,
     level: "standard",
     youtube: true,
     cosmetics: true,
+    youtubeLab: { ...DEFAULT_YOUTUBE_LAB },
     allowedSites: [],
     customRules: [],
     customNetwork: [],
@@ -35,7 +37,7 @@
   async function getSettings() {
     const { settings } = await chrome.storage.local.get("settings");
     if (!settings) return structuredClone(DEFAULT_SETTINGS);
-    return { ...structuredClone(DEFAULT_SETTINGS), ...settings, lists: { ...DEFAULT_SETTINGS.lists, ...settings.lists }, listMeta: settings.listMeta || {} };
+    return { ...structuredClone(DEFAULT_SETTINGS), ...settings, lists: { ...DEFAULT_SETTINGS.lists, ...settings.lists }, youtubeLab: { ...DEFAULT_YOUTUBE_LAB, ...settings.youtubeLab }, listMeta: settings.listMeta || {} };
   }
   async function saveSettings(settings) {
     await chrome.storage.local.set({ settings });
@@ -207,7 +209,7 @@
   }
   async function syncRules(settings) {
     const enabledStatic = BUILTIN_IDS.filter((id) => settings.lists[id] && !settings.listMeta[id]?.updatedAt);
-    if (settings.youtube) enabledStatic.push("youtube");
+    if (settings.enabled && settings.youtube && settings.youtubeLab?.network !== false) enabledStatic.push("youtube");
     const current = await dnr.getEnabledRulesets();
     await dnr.updateEnabledRulesets({ enableRulesetIds: enabledStatic.filter((id) => !current.includes(id)), disableRulesetIds: current.filter((id) => !enabledStatic.includes(id)) });
     const currentDynamic = await dnr.getDynamicRules();
@@ -221,6 +223,14 @@
       return rule.id >= CUSTOM_RULE_START;
     }).map((rule) => rule.id);
     const addRules = [];
+    if (!settings.youtube || settings.youtubeLab?.network === false) {
+      addRules.push({ id: 850100, priority: 8e4, action: { type: dnr.RuleActionType.ALLOW_ALL_REQUESTS }, condition: { urlFilter: "||youtube.com^", resourceTypes: [dnr.ResourceType.MAIN_FRAME, dnr.ResourceType.SUB_FRAME] } });
+      addRules.push({ id: 850101, priority: 8e4, action: { type: dnr.RuleActionType.ALLOW }, condition: { initiatorDomains: ["youtube.com"] } });
+    }
+    if (settings.enabled && settings.youtube && settings.youtubeLab?.network !== false && settings.youtubeLab?.probes !== false) {
+      addRules.push({ id: 850110, priority: 81e3, action: { type: dnr.RuleActionType.ALLOW }, condition: { urlFilter: "||googleads.g.doubleclick.net/pagead/id^", resourceTypes: [dnr.ResourceType.XMLHTTPREQUEST], initiatorDomains: ["youtube.com"] } });
+      addRules.push({ id: 850111, priority: 81e3, action: { type: dnr.RuleActionType.ALLOW }, condition: { urlFilter: "||static.doubleclick.net/instream/ad_status.js^", resourceTypes: [dnr.ResourceType.SCRIPT], initiatorDomains: ["youtube.com"] } });
+    }
     if (!settings.enabled) addRules.push({ id: GLOBAL_PAUSE_ID, priority: 1e5, action: { type: dnr.RuleActionType.ALLOW }, condition: { urlFilter: "|http" } });
     settings.allowedSites.slice(0, 100).forEach((domain, i) => {
       addRules.push({ id: SITE_RULE_START + i * 2, priority: 5e4, action: { type: dnr.RuleActionType.ALLOW_ALL_REQUESTS }, condition: { urlFilter: `||${domain}^`, resourceTypes: [dnr.ResourceType.MAIN_FRAME, dnr.ResourceType.SUB_FRAME] } });
@@ -234,6 +244,7 @@
   }
   async function cosmeticsFor(host, settings) {
     if (!settings.enabled || !settings.cosmetics || isAllowed(host, settings.allowedSites)) return [];
+    if ((!settings.youtube || settings.youtubeLab?.cosmetics === false) && /(^|\.)youtube\.com$/.test(host)) return [];
     const domain = normalizeDomain(host);
     const domains = [];
     let part = domain;
@@ -292,11 +303,13 @@
       case "STATUS":
         return status(message.tabId, message.url);
       case "COSMETICS":
-        return { selectors: await cosmeticsFor(message.host, settings), enabled: settings.enabled && !isAllowed(message.host, settings.allowedSites), youtube: settings.youtube, cosmetics: settings.cosmetics, youtubeDebug: settings.youtubeDebug === true, aggressive: settings.level === "aggressive" };
+        return { selectors: await cosmeticsFor(message.host, settings), enabled: settings.enabled && !isAllowed(message.host, settings.allowedSites), youtube: settings.youtube, cosmetics: settings.cosmetics, youtubeDebug: settings.youtubeDebug === true, aggressive: settings.level === "aggressive", youtubeLab: settings.youtubeLab };
       case "SETTINGS":
         return settings;
       case "SET": {
-        const next = { ...settings, ...message.patch };
+        const rawLab = message.patch?.youtubeLab;
+        if (rawLab !== void 0 && (!rawLab || typeof rawLab !== "object" || Array.isArray(rawLab) || Object.entries(rawLab).some(([key, value]) => !["network", "player", "skip", "cosmetics", "probes"].includes(key) || typeof value !== "boolean"))) throw new Error("Controles de teste invalidos.");
+        const next = { ...settings, ...message.patch, youtubeLab: { ...settings.youtubeLab, ...rawLab } };
         if (message.patch?.customNetwork) {
           if (!Array.isArray(next.customNetwork) || next.customNetwork.length > 500 || next.customNetwork.some((line) => typeof line !== "string" || !parseNetwork(line))) throw new Error("Regra de rede inv\xE1lida ou limite de 500 regras atingido.");
         }
@@ -400,6 +413,7 @@
           youtube: imported.youtube !== false,
           cosmetics: imported.cosmetics !== false,
           youtubeDebug: imported.youtubeDebug === true,
+          youtubeLab: { ...DEFAULT_SETTINGS.youtubeLab },
           allowedSites: Array.isArray(imported.allowedSites) ? imported.allowedSites.map(normalizeDomain).filter(Boolean).slice(0, 100) : [],
           customRules: Array.isArray(imported.customRules) ? imported.customRules.filter((r) => normalizeDomain(r.domain) && typeof r.selector === "string" && parseCosmetic(`${normalizeDomain(r.domain)}##${r.selector}`)).slice(0, 500) : [],
           customNetwork: Array.isArray(imported.customNetwork) ? imported.customNetwork.filter((r) => typeof r === "string" && parseNetwork(r)).slice(0, 500) : [],

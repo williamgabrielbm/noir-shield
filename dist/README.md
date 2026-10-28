@@ -1,95 +1,104 @@
-# Noir Shield 0.2.0
+# Noir Shield 0.2.3 beta
 
-Implementação atual do YouTube: [auditoria, arquitetura, testes executados e limitações](docs/YOUTUBE-ENGINE.md). O pacote inclui prevenção seletiva em MAIN, integração com configurações e fallback nativo. Não há comprovação de bloqueio integral de anúncios reais.
+Bloqueador gratuito e de código aberto para Chrome e Edge, em Manifest V3. Combina regras de rede declarativeNetRequest, filtros cosméticos, listas verificáveis e controles por site. O código está em src/; dist/ contém a extensão compilada.
 
-Extensão real para Chromium (Manifest V3) com bloqueio de rede por `declarativeNetRequest`, filtragem cosmética, exceções por site e controles para YouTube. **Versão beta 0.2.0:** funcional nos testes descritos abaixo, mas ainda sem validação manual completa no Chrome instalado, YouTube real e Twitch real. O código fonte está em `src/`; a pasta **`dist/`** é a extensão pronta para carregar.
+Na versão 0.2.3, o motor YouTube trata o carregamento inicial e a navegação SPA, incluindo get_watch e sequências de Shorts. Em 28/10/2026, dois controles no Chrome instalado exibiram mid-roll real; nos mesmos vídeos com proteção, o conteúdo reproduziu por mais de 15 minutos contínuos, sem anúncios ou aviso anti-adblock observado. Comparações anteriores no Edge também passaram. Isso descreve as sessões registradas, sem garantia para toda conta, região ou mudança futura do YouTube.
 
-## Instalar no Google Chrome ou Microsoft Edge
+- [Mudanças da versão](CHANGELOG.md)
+- [Arquitetura, testes e limites](docs/YOUTUBE-ENGINE.md)
+- [Resultados Chrome](docs/validation/2026-10-28/chrome.json) e [Edge](docs/validation/2026-10-28/edge.json)
+- [Privacidade](PRIVACY.md)
+- [Chrome Web Store](https://chromewebstore.google.com/detail/camcmlekdnfckogegmeckemefkfpmmpa)
 
-1. Extraia o projeto, caso tenha recebido um ZIP.
-2. Abra `chrome://extensions` (Chrome) ou `edge://extensions` (Edge).
-3. Ative **Modo do desenvolvedor**.
-4. Clique em **Carregar sem compactação** e selecione a pasta `NoirShield/dist` — a que contém `manifest.json`.
-5. Fixe o ícone na barra de ferramentas. Abra um site HTTP/HTTPS e clique no ícone para usar o popup.
+## Instalação local
 
-Depois de alterar o código, execute `npm ci` e `npm run build` na pasta do projeto; na página de extensões, clique em **Atualizar**. Recarregue as abas já abertas para iniciar os scripts de conteúdo atualizados.
+1. Abra chrome://extensions ou edge://extensions e ative o modo de desenvolvedor.
+2. Escolha **Carregar sem compactação** e selecione dist/, a pasta que contém manifest.json.
+3. Feche as abas antigas do YouTube e abra novas abas após atualizar a extensão.
 
-## O que faz
+A versão disponível na loja pode ficar atrás do código enquanto uma atualização aguarda análise. Desative outra cópia do Noir Shield antes de carregar dist/.
 
-- Bloqueia requisições conhecidas por regras DNR estáticas, atualizadas e personalizadas. O navegador aplica as regras sem passar o conteúdo das requisições pelo service worker.
-- Usa EasyList, EasyPrivacy e AdGuard Spanish/Portuguese por padrão. AdGuard Base e Tracking Protection podem ser ativadas em Configurações.
-- Compila filtros textuais baixados por HTTPS para o subconjunto suportado por esta extensão. Atualizações agendadas ocorrem uma vez por dia para listas incluídas que estiverem ativas; o botão **Atualizar** permite tentar imediatamente. Erros ficam visíveis na página de listas.
-- Aplica seletores CSS compatíveis, incluindo regras globais, regras de domínio, exceções cosméticas e regras criadas pelo usuário. CSS continua valendo em conteúdo dinâmico. A seleção manual destaca o elemento, permite confirmar e oferece desfazer nas configurações.
-- Pausa globalmente ou por site. A lista de permissões persiste após reiniciar o navegador e vale para subdomínios. Páginas abertas recebem a mudança cosmética imediatamente; uma navegação/reload renova o contexto das regras de rede da página.
-- YouTube: DNR para recursos publicitários observados, filtragem seletiva de dados reconhecidos em `ytInitialPlayerResponse`, fetch e XHR; CSS publicitário, navegação SPA e botão nativo **Pular anúncio** como fallback. O modo agressivo reduz o intervalo de detecção sem alterar tempo, mudo ou velocidade do vídeo. Ações de player e sanitização **não** são contabilizadas como bloqueios de rede.
+## Recursos
 
-## Desenvolvimento e testes
+- Regras DNR estáticas e dinâmicas para bloquear requisições publicitárias e rastreadores separáveis do conteúdo.
+- EasyList, EasyPrivacy e AdGuard Spanish/Portuguese habilitadas por padrão; AdGuard Base e Tracking Protection opcionais.
+- Atualização HTTPS direta das listas, programada diariamente para as listas incluídas ativas, e atualização manual com erros visíveis.
+- Regras pessoais, listas por URL, filtros cosméticos, seleção manual de elementos e exceções por domínio/subdomínio.
+- Pausa global ou por site, preferências persistentes, importação e exportação locais.
+- YouTube: filtragem seletiva de dados publicitários reconhecidos, navegação SPA, sequências de Shorts e botão nativo de pular como fallback. O motor não altera tempo, velocidade, volume ou origem do vídeo e não oculta o aviso anti-adblock.
+- Laboratório local para controlar separadamente as camadas do YouTube e comparar perfis de diagnóstico.
 
-Requer Node.js 20+.
+As estatísticas mostram apenas dados disponibilizados pelo navegador. Eventos cosméticos e transformações do player não são contados como bloqueios de rede. Fora do modo de desenvolvimento, totais de depuração podem ficar indisponíveis. Não há validação de bloqueio integral de Twitch nem de formatos publicitários desconhecidos inseridos no mesmo fluxo do conteúdo.
 
-```powershell
-npm ci
-npm run typecheck
-npm test
-npm run build
-npm run e2e
-$env:NOIR_BROWSER='edge'; npm run e2e
-```
+## Desenvolvimento
 
-`npm run refresh` baixa novamente as fontes oficiais e recompila o pacote. `npm run build` reutiliza `.cache/` quando presente; num clone novo, baixa as fontes oficiais. O conteúdo da cache não é versionado, portanto um build futuro pode refletir novas versões das listas. O compilador (`scripts/compiler.mjs`) rejeita sintaxe incompatível em vez de criar regras mais amplas sem aviso.
+Requer Node.js 20+ e npm.
 
-## Publicação
+    npm ci
+    npm run typecheck
+    npm test
+    npm run build
+    npm run e2e
+    npm run test:youtube
 
-O ZIP do repositório/projeto, que contém `dist/` como subpasta, **não** deve ser enviado à Chrome Web Store. Para gerar um ZIP de upload com `manifest.json` na raiz e sem os metadados locais `_metadata/`:
+npm run build reutiliza .cache/ quando disponível; num clone novo baixa as fontes oficiais. npm run refresh baixa as listas novamente. A cache não é versionada: um build futuro pode refletir listas diferentes. As regras compiladas em dist/rules/ e os hashes publicados registram a versão testada.
 
-```powershell
-npm ci
-npm run typecheck
-npm test
-npm run build
-./scripts/package-store.ps1
-```
+O compilador suporta um subconjunto explícito da sintaxe de filtros. Rejeita sintaxe incompatível em vez de ampliar silenciosamente o bloqueio. Cada lista é compilada independentemente para preservar seu funcionamento quando outra é desativada.
 
-O comando cria `../NoirShield-CWS-0.2.0.zip`. O pacote inclui apenas os arquivos necessários da extensão, sua documentação e as regras compiladas. Na versão de loja, a permissão de depuração `declarativeNetRequestFeedback` é removida e `activeTab` permite consultar correspondências da aba quando o usuário aciona a extensão; totais acumulados de depuração não são prometidos. Consulte [PRIVACY.md](PRIVACY.md) e [STORE_LISTING.md](STORE_LISTING.md) antes de preencher o painel da loja. Publique a política de privacidade em um URL público. Faça os testes manuais abaixo antes de enviar para análise; aprovação pela loja não é garantida. A conta de desenvolvedor da Chrome Web Store e a verificação em duas etapas são gerenciadas pelo titular da conta.
+## Testes reais do YouTube
 
-O teste de ponta a ponta usa um perfil temporário e um servidor local. Ele verificou, em Chromium de teste e Edge instalado: carregamento MV3; regra incluída da EasyList (requisição não chegou ao servidor); regra personalizada; consulta de correspondência DNR; atualização da EasyList no service worker; ligar/desligar listas; adicionar, alternar e remover lista por URL; CSS cosmético; pausa por site e global; botão de energia do popup; seleção visual; exportar/importar configurações; acionamento de pular anúncio e CSS em uma página sintética do YouTube; navegação SPA; persistência após reinício. Não usa o perfil pessoal do navegador.
+Perfis temporários separados, sem copiar sessões pessoais. O executor Chrome instalado roda no Windows em um desktop separado, sem aparecer na tela de trabalho, com áudio global desativado e elementos em mudo/volume zero. O caminho padrão é C:\Program Files\Google\Chrome\Application\chrome.exe.
 
-## Limites reais
+No PowerShell, para um controle sem Noir Shield:
 
-- A sintaxe completa ABP/AdGuard **não** é suportada. O compilador aceita padrões de rede ancorados em domínio `||domínio^` com opções simples (`third-party`, tipo de recurso e `domain=`), exceções `@@`, e seletores cosméticos CSS `##` / `#@#`. Regras regex, scriptlets, redirecionamentos, filtros procedurais, `:has()` e modificações de resposta são ignorados. O relatório de build registra quantas regras foram ignoradas e duplicadas.
-- O pacote contém até 4.500 regras de rede por lista incluída (a lista regional gerou 930), e as atualizações em execução usam até 3.500 por lista incluída e 1.000 por lista personalizada, reservando espaço para exceções e regras pessoais dentro do limite dinâmico. O limite cosmético é 3.000 por lista no pacote e 1.500 nas atualizações. A seleção favorece regras populares e distribui o restante pela lista; ela não reproduz a cobertura integral dos bloqueadores maduros.
-- O bloqueio de anúncios no YouTube varia conforme o serviço entrega o vídeo. Anúncios no mesmo fluxo, formatos desconhecidos, dados já consumidos antes da configuração e caminhos não interceptados podem escapar. Lives não são sanitizadas. Erros de mídia liberam os hooks sem reload automático. Não há contorno de DRM nem de autenticação. A extensão não considera um anúncio “bloqueado” apenas porque um elemento foi ocultado. Ao desativar a extensão pelo navegador, recarregue a aba para remover também efeitos já aplicados.
-- No Twitch e em outros players, as regras de terceiros e a filtragem cosmética funcionam quando o anúncio é uma requisição/elemento separável. Anúncios inseridos no mesmo fluxo de mídia não têm bloqueio confiável nesta versão.
-- Os totais de sessão/acumulados dependem de `onRuleMatchedDebug`, disponível para extensões descompactadas em depuração; **não são prometidos na versão publicada pela loja**. O popup consulta `getMatchedRules` para a aba quando permitido pelo navegador; seu histórico é limitado. Onde essas APIs não permitem uma contagem confiável, aparece `—`/“indisponível”. Nenhum contador é estimado.
-- Chrome e Edge podem impedir transparência *fora* da janela nativa do popup; os componentes internos usam vidro escuro translúcido.
+    $env:NOIR_LABEL='ctrl01'
+    $env:NOIR_CONTROL='1'
+    $env:NOIR_ENTRY='search'
+    $env:NOIR_VIDEO='0e3GPea1Tyg'
+    $env:NOIR_SECONDS='1900'
+    npm run test:youtube:chrome
 
-### Testes manuais ainda necessários
+Para proteção em outro perfil:
 
-1. Carregar `dist/` pelo fluxo de desenvolvedor no **Chrome instalado** e verificar o popup na janela nativa. A automação passou no Chromium de teste e no Edge instalado; o Chrome instalado não expôs o service worker quando iniciado pelo Playwright com `--load-extension` em headless.
-2. No **YouTube real**, verificar pre-roll, mid-roll, Shorts, busca, página inicial e navegação entre vídeos com e sem anúncios. A automação cobriu DOM/player sintéticos, portanto não comprova remoção de anúncios reais servidos pelo YouTube.
-3. No **Twitch real**, verificar se anúncios de terceiros são filtrados e confirmar as limitações para anúncios no fluxo de vídeo.
-4. Testar em sites habituais do usuário, especialmente login, compras e vídeo, e usar a permissão por site quando uma regra causar incompatibilidade.
-5. Testar o ZIP final enviado à loja, não apenas a pasta `dist/`; verificar que a loja aceita permissões, regras e declarações de privacidade.
+    Remove-Item Env:NOIR_CONTROL
+    $env:NOIR_LABEL='prot01'
+    $env:NOIR_CONTENT_TARGET='930'
+    npm run test:youtube:chrome
 
-## Arquitetura e permissões
+Use rótulos curtos e inéditos. Para a playlist, use novos rótulos, NOIR_ENTRY='playlist' e NOIR_VIDEO='9vKqVkMQHKk'. Sem anúncio real no controle, a nova comparação é inconclusiva. Fixtures verificam contratos e regressões, mas não comprovam sozinhas eficácia no YouTube real. Os relatórios ficam em work/<rótulo>/, fora do pacote da loja.
 
-`src/background.ts` gerencia DNR, listas, exceções, estatísticas e persistência. `src/content.ts` aplica CSS, seleciona elementos e trata o YouTube. `scripts/compiler.mjs` faz a conversão conservadora; `scripts/build.mjs` empacota as regras. `src/popup.*` e `src/options.*` implementam os controles. `chrome.storage.local` guarda preferências e contadores; `chrome.storage.session` guarda o estado da sessão. Não há analytics, telemetria própria, histórico enviado a servidores ou JavaScript remoto. A política de privacidade detalha os dados processados localmente e as conexões para baixar listas.
+## Pacote da Chrome Web Store
 
-| Permissão | Uso |
+O ZIP completo de teste contém fonte e evidências. Para a loja, gere um ZIP separado com apenas a extensão e manifest.json na raiz:
+
+    npm run typecheck
+    npm test
+    npm run build
+    ./scripts/package-store.ps1 -Destination C:\caminho\NoirShield-CWS-0.2.3.zip
+
+O empacotador inclui os recursos da extensão, inclusive o laboratório; exclui perfis, testes, documentação de execução e metadados locais. Substitui declarativeNetRequestFeedback por activeTab, como no pacote 0.2.0 já publicado. Os bundles JavaScript são preservados. [Texto para a loja](STORE_LISTING.md).
+
+## Privacidade e permissões
+
+Sem conta, publicidade própria, analytics ou telemetria. Preferências e contagens disponíveis ficam em chrome.storage.local e chrome.storage.session. Atualizações de listas acessam diretamente seus provedores por HTTPS, sem anexar histórico ou identificadores próprios. Não há código executável remoto.
+
+| Permissão | Finalidade |
 |---|---|
-| `declarativeNetRequest` | Bloquear ou permitir requisições com regras declarativas. |
-| `declarativeNetRequestFeedback` | Consultar correspondências e obter eventos de depuração quando permitidos. |
-| `storage` | Preferências, regras do usuário, metadados das listas e contadores disponíveis. |
-| `tabs` | Identificar o site atual, atualizar abas abertas e exibir o contador da aba. |
-| `alarms` | Tentar atualizar listas ativas diariamente. |
-| `contextMenus` | Acesso à seleção manual pelo menu de contexto. |
-| `http://*/*`, `https://*/*` | Aplicar filtros nas páginas e baixar as listas configuradas. Esta permissão ampla é necessária para um bloqueador geral; URLs visitadas não são transmitidas pela extensão. |
+| declarativeNetRequest | Aplicar bloqueios e exceções de rede. |
+| activeTab no pacote da loja | Consultar correspondências da aba após ação explícita no popup, quando permitido. |
+| declarativeNetRequestFeedback apenas no build de desenvolvimento | Eventos e consultas de depuração. |
+| storage | Preferências, regras, metadados e contagens locais disponíveis. |
+| tabs | Identificar o domínio atual e atualizar abas abertas. |
+| alarms | Agendar atualização das listas. |
+| contextMenus | Acesso à seleção manual de elementos. |
+| Acesso HTTP/HTTPS | Aplicar filtros nos sites e baixar as listas configuradas. |
 
-## Licenças e fontes dos filtros
+## Licenças
 
-O código do Noir Shield e o pacote distribuído são GPL-3.0. As regras incluídas derivam das fontes oficiais, com atribuição:
+Código e pacote: [GPL-3.0-only](LICENSE).
 
-- [EasyList / EasyPrivacy](https://easylist.to/) — [licença GPLv3 ou posterior / CC BY-SA 3.0](https://easylist.to/pages/licence.html).
-- [AdGuard Filters](https://github.com/AdguardTeam/AdguardFilters) — [GPLv3](https://github.com/AdguardTeam/AdguardFilters/blob/master/LICENSE). A lista Spanish/Portuguese fornece cobertura regional relevante para páginas em português, incluindo brasileiras.
+- [EasyList / EasyPrivacy](https://easylist.to/): [GPLv3 ou posterior / CC BY-SA 3.0](https://easylist.to/pages/licence.html).
+- [AdGuard Filters](https://github.com/AdguardTeam/AdguardFilters): [GPLv3](https://github.com/AdguardTeam/AdguardFilters/blob/master/LICENSE).
+- Dependências de desenvolvimento: TypeScript e Playwright (Apache-2.0), esbuild e pngjs (MIT).
 
-Dependências de desenvolvimento: TypeScript (Apache-2.0), esbuild (MIT), Playwright (Apache-2.0) e pngjs (MIT). Nenhuma delas é carregada remotamente pela extensão. A pasta local `.cache/` contém o texto das listas baixadas para builds posteriores; `dist/rules/metadata.json` registra contagens e URLs de origem do build.
+As dependências de desenvolvimento não são carregadas remotamente pela extensão. dist/rules/metadata.json registra fontes e contagens das listas compiladas.

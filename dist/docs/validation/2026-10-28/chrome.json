@@ -1,0 +1,346 @@
+{
+  "date": "2026-10-28",
+  "chromeLiveMidrollValidatedInTheseSessions": true,
+  "scope": "Installed Google Chrome, normal mode in separate Windows desktops never switched to the screen, muted; not Chrome for Testing.",
+  "universalGuarantee": false,
+  "comparisons": [
+    {
+      "videoId": "0e3GPea1Tyg",
+      "browser": "Chrome/156.0.8078.48",
+      "controlLabel": "chrome-portonly-private-control-1",
+      "protectedLabel": "chrome-port-protected-normal-2",
+      "controlMidroll": {
+        "at": "2026-10-28T14:16:41.624Z",
+        "elapsed": 542.37,
+        "type": "mid-roll",
+        "priorContentSeconds": 518.332348,
+        "priorContentTime": 519.265153,
+        "target": "0e3GPea1Tyg",
+        "endedAt": "2026-10-28T14:16:55.585Z",
+        "resumedTime": 520.546401,
+        "resumedVideoId": "0e3GPea1Tyg",
+        "resumed": true
+      },
+      "protectedContentSeconds": 930.421688,
+      "protectedStrictContinuousSeconds": 930.421688,
+      "protectedTargetMet": true,
+      "protectedAdSamples": 0,
+      "protectedErrorSamples": 0,
+      "protectedAntiSamples": 0,
+      "mutedAllSamples": true,
+      "loadedNoir": {
+        "product": "Chrome/156.0.8078.48",
+        "extensionLoaded": true,
+        "headless": false,
+        "privateDesktop": true,
+        "audioDisabled": true,
+        "loader": "official CDP loadUnpacked over local port",
+        "pipeDuringPlayback": false,
+        "extraExtensionDebugFlag": false,
+        "restartAfterInstall": false
+      },
+      "originalAdData": [
+        {
+          "at": "2026-10-28T14:17:23.882Z",
+          "endpoint": "/youtubei/v1/get_watch",
+          "http": 200,
+          "players": [
+            {
+              "videoId": "0e3GPea1Tyg",
+              "status": "OK",
+              "streamingData": true,
+              "serverAbr": true,
+              "formats": 1,
+              "adaptiveFormats": 122,
+              "adArrays": [
+                {
+                  "key": "adPlacements",
+                  "count": 11
+                },
+                {
+                  "key": "playerAds",
+                  "count": 1
+                },
+                {
+                  "key": "adSlots",
+                  "count": 6
+                }
+              ],
+              "placements": [
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 180000
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 300166
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 519633
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 631549
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 760713
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 831921
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 989900
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 1079006
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 1230246
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 1361400
+                },
+                {
+                  "kind": "AD_PLACEMENT_KIND_END",
+                  "offsetMilliseconds": null
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "controlAdSamples": [
+        {
+          "at": "2026-10-28T14:16:41.624Z",
+          "time": 0,
+          "duration": 6,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:42.948Z",
+          "time": 0.95189,
+          "duration": 6.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:43.977Z",
+          "time": 1.981362,
+          "duration": 6.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:44.997Z",
+          "time": 2.999511,
+          "duration": 6.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:46.016Z",
+          "time": 4.018075,
+          "duration": 6.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:47.033Z",
+          "time": 5.035032,
+          "duration": 6.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:48.123Z",
+          "time": 0,
+          "duration": null,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:49.182Z",
+          "time": 0.012704,
+          "duration": 20.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:50.243Z",
+          "time": 1.066449,
+          "duration": 20.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:51.281Z",
+          "time": 2.104021,
+          "duration": 20.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:52.306Z",
+          "time": 3.129924,
+          "duration": 20.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:53.335Z",
+          "time": 4.158058,
+          "duration": 20.041,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:16:54.363Z",
+          "time": 5.185589,
+          "duration": 20.041,
+          "ready": 4,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "videoId": "9vKqVkMQHKk",
+      "browser": "Chrome/156.0.8078.48",
+      "controlLabel": "chrome-normal-playlist-control-2",
+      "protectedLabel": "chrome-normal-playlist-protected-2",
+      "controlMidroll": {
+        "at": "2026-10-28T14:30:20.642Z",
+        "elapsed": 632.828,
+        "type": "mid-roll",
+        "priorContentSeconds": 623.840474,
+        "priorContentTime": 624.730839,
+        "target": "9vKqVkMQHKk",
+        "endedAt": "2026-10-28T14:30:28.134Z",
+        "resumedTime": 626.350299,
+        "resumedVideoId": "9vKqVkMQHKk",
+        "resumed": true
+      },
+      "protectedContentSeconds": 930.228506,
+      "protectedStrictContinuousSeconds": 930.228506,
+      "protectedTargetMet": true,
+      "protectedAdSamples": 0,
+      "protectedErrorSamples": 0,
+      "protectedAntiSamples": 0,
+      "mutedAllSamples": true,
+      "loadedNoir": {
+        "product": "Chrome/156.0.8078.48",
+        "extensionLoaded": true,
+        "headless": false,
+        "privateDesktop": true,
+        "audioDisabled": true,
+        "loader": "CDP Extensions.loadUnpacked over local port",
+        "pipeDuringPlayback": false,
+        "extraExtensionDebugFlag": false,
+        "restartAfterInstall": false
+      },
+      "originalAdData": [
+        {
+          "at": "2026-10-28T14:19:48.419Z",
+          "endpoint": "/youtubei/v1/get_watch",
+          "http": 200,
+          "players": [
+            {
+              "videoId": "9vKqVkMQHKk",
+              "status": "OK",
+              "streamingData": true,
+              "serverAbr": true,
+              "formats": 1,
+              "adaptiveFormats": 54,
+              "adArrays": [
+                {
+                  "key": "adPlacements",
+                  "count": 1
+                },
+                {
+                  "key": "playerAds",
+                  "count": 1
+                },
+                {
+                  "key": "adSlots",
+                  "count": 7
+                }
+              ],
+              "placements": [
+                {
+                  "kind": "AD_PLACEMENT_KIND_MILLISECONDS",
+                  "offsetMilliseconds": 625418
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "controlAdSamples": [
+        {
+          "at": "2026-10-28T14:30:20.642Z",
+          "time": 0,
+          "duration": 36,
+          "ready": 0,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:30:21.753Z",
+          "time": 0.856433,
+          "duration": 36.681,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:30:22.784Z",
+          "time": 1.887118,
+          "duration": 36.681,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:30:23.820Z",
+          "time": 2.922179,
+          "duration": 36.681,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:30:24.843Z",
+          "time": 3.945082,
+          "duration": 36.681,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:30:25.871Z",
+          "time": 4.974013,
+          "duration": 36.681,
+          "ready": 4,
+          "paused": false
+        },
+        {
+          "at": "2026-10-28T14:30:26.915Z",
+          "time": 6.0166,
+          "duration": 36.681,
+          "ready": 4,
+          "paused": false
+        }
+      ]
+    }
+  ],
+  "runtimeSha256": {
+    "youtube-main.js": "ded8d4c210fe9871203f65688488d485da6e00507718c5465d9e7dc541c2e9ba",
+    "content.js": "f3eb2fb0ebf18f6bb0ce6c3364f2ed52b1017c3f39cbada369fbd2de105d614c",
+    "background.js": "15e5f3cb66ccf086922943127e39b55c9ffb253a65844c31a38c1b74fb20ff92",
+    "popup.js": "16bcc87960075532a1d69b5d85237347427320d299d3425df49a93ff9357c18f",
+    "options.js": "d52cfa3e3b9b0e28e1f25d665e33afc9015eb629e314ad9ccc0b853382f94da5",
+    "youtube-lab.js": "828e4f220fa8dc9d64f4998e6bfd13a494536fdf0726744fb157079c10598b45"
+  }
+}

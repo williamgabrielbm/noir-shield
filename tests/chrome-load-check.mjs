@@ -1,0 +1,3 @@
+import fs from 'node:fs/promises';import path from 'node:path';import {installedChrome} from './chrome-installed.mjs';import {noirWorker,closeNative} from './native-browser.mjs';
+const dir=path.resolve('work',process.env.NOIR_LABEL||'chrome-load-check');await fs.mkdir(dir,{recursive:true});let c;
+try{c=await installedChrome(await fs.mkdtemp(path.join(dir,'profile-')),path.resolve('dist'),true);const w=await noirWorker(c);const identity=await w.evaluate(()=>({name:chrome.runtime.getManifest().name,version:chrome.runtime.getManifest().version}));console.log(JSON.stringify({metadata:c.chromeTestMetadata,identity}));await fs.writeFile(path.join(dir,'report.json'),JSON.stringify({metadata:c.chromeTestMetadata,identity},null,2));}finally{if(c)await closeNative(c);}

@@ -47,7 +47,7 @@ for(const [id,url] of LISTS){
     if(text.length<10000) throw new Error(`${id}: source too small`);
     await fs.writeFile(cachePath,text);
   }
-  const compiled=compileList(text,{maxRules:4500,maxCosmetics:3000,seen});
+  const compiled=compileList(text,{maxRules:4500,maxCosmetics:3000,seen:new Set()});
   await fs.writeFile(path.join(dist,'rules',`${id}.json`),JSON.stringify(compiled.rules));
   allowIds[id]=compiled.rules.filter(r=>r.action.type==='allow').map(r=>r.id);
   const cosmetic={global:[],domains:{},exceptions:{}};
@@ -69,10 +69,10 @@ const youtubeRules=[
 await fs.writeFile(path.join(dist,'rules','youtube.json'),JSON.stringify(youtubeRules));
 await fs.writeFile(path.join(dist,'rules','allow-ids.json'),JSON.stringify(allowIds));
 await fs.writeFile(path.join(dist,'rules','metadata.json'),JSON.stringify(metadata,null,2));
-for(const name of ['manifest.json','popup.html','options.html','ui.css'])await fs.copyFile(path.join(root,'src',name),path.join(dist,name));
+for(const name of ['manifest.json','popup.html','options.html','youtube-lab.html','ui.css'])await fs.copyFile(path.join(root,'src',name),path.join(dist,name));
 for(const name of ['README.md','PRIVACY.md','LICENSE'])await fs.copyFile(path.join(root,name),path.join(dist,name));
 await fs.cp(path.join(root,'docs'),path.join(dist,'docs'),{recursive:true});
-for(const [name,entry] of [['background','background.ts'],['content','content.ts'],['youtube-main','youtube/main.ts'],['popup','popup.ts'],['options','options.ts']]){
+for(const [name,entry] of [['background','background.ts'],['content','content.ts'],['youtube-main','youtube/main.ts'],['popup','popup.ts'],['options','options.ts'],['youtube-lab','youtube-lab.ts']]){
   await build({entryPoints:[path.join(root,'src',entry)],outfile:path.join(dist,`${name}.js`),bundle:true,format:'iife',target:'chrome121',minify:false,logLevel:'warning'});
 }
 console.log(`Built ${dist}`);

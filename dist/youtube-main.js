@@ -15,20 +15,100 @@
     }
     return result;
   }
+  function sanitizePlayerPayload(value) {
+    const direct = sanitizePlayer(value);
+    if (direct !== value) return direct;
+    const envelope = (entry) => {
+      if (!record(entry) || !record(entry.playerResponse)) return entry;
+      const next2 = sanitizePlayer(entry.playerResponse);
+      return next2 === entry.playerResponse ? entry : { ...entry, playerResponse: next2 };
+    };
+    if (!Array.isArray(value)) {
+      const result = envelope(value);
+      if (!record(result) || !Array.isArray(result.entries)) return result;
+      const entries = result.entries.filter((entry) => {
+        if (!record(entry) || !record(entry.command) || !record(entry.command.reelWatchEndpoint)) return true;
+        const params = entry.command.reelWatchEndpoint.adClientParams;
+        return !record(params) || params.isAd !== true;
+      });
+      return entries.length === result.entries.length ? result : { ...result, entries };
+    }
+    let changed = false;
+    const next = value.map((entry) => {
+      const result = envelope(entry);
+      changed ||= result !== entry;
+      return result;
+    });
+    return changed ? next : value;
+  }
   function playerEndpoint(input, base) {
     try {
       const url = new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input instanceof Request ? input.url : "", base);
-      return url.origin === new URL(base).origin && url.pathname === "/youtubei/v1/player";
+      return url.origin === new URL(base).origin && (url.pathname === "/youtubei/v1/player" || url.pathname === "/youtubei/v1/get_watch" || url.pathname === "/youtubei/v1/reel/reel_watch_sequence");
     } catch {
       return false;
+    }
+  }
+
+  // src/youtube/response.ts
+  var MAX_BYTES = 4e6;
+  async function filterPlayerResponse(response, active) {
+    if (!active() || !response.ok || !response.headers.get("content-type")?.includes("application/json")) return response;
+    if (Number(response.headers.get("content-length")) > MAX_BYTES) return response;
+    const copy = response.clone();
+    const reader = copy.body?.getReader();
+    if (!reader) return response;
+    const chunks = [];
+    let size = 0;
+    try {
+      while (true) {
+        const part = await reader.read();
+        if (part.done) break;
+        size += part.value.byteLength;
+        if (!active() || size > MAX_BYTES) {
+          void reader.cancel().catch(() => {
+          });
+          return response;
+        }
+        chunks.push(part.value);
+      }
+      if (!active()) return response;
+      const bytes = new Uint8Array(size);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+      const data = JSON.parse(new TextDecoder().decode(bytes));
+      const next = sanitizePlayerPayload(data);
+      if (next === data || !active()) return response;
+      const headers = new Headers(response.headers);
+      for (const name of ["content-length", "content-encoding", "etag", "content-md5", "digest"]) headers.delete(name);
+      const decorate = (item) => {
+        const clone = item.clone;
+        Object.defineProperties(item, {
+          url: { configurable: true, value: response.url },
+          redirected: { configurable: true, value: response.redirected },
+          type: { configurable: true, value: response.type },
+          clone: { configurable: true, value: function() {
+            return decorate(clone.call(this));
+          } }
+        });
+        return item;
+      };
+      return decorate(new Response(JSON.stringify(next), { status: response.status, statusText: response.statusText, headers }));
+    } catch {
+      void reader.cancel().catch(() => {
+      });
+      return response;
+    } finally {
+      reader.releaseLock();
     }
   }
 
   // src/youtube/main.ts
   (() => {
     const scope = window;
-    if (scope.__noirMain) return;
-    scope.__noirMain = true;
     const eventName = "noir-youtube-config-v1";
     let enabled = false, lease = 0;
     let originalFetch, wrappedFetch;
@@ -40,7 +120,7 @@
     const clean = (value) => {
       if (!enabled || Date.now() > lease) return value;
       try {
-        return sanitizePlayer(value);
+        return sanitizePlayerPayload(value);
       } catch {
         return value;
       }
@@ -52,36 +132,7 @@
         apply(target, receiver, args) {
           const promise = Reflect.apply(target, receiver, args);
           if (!enabled || !playerEndpoint(args[0], location.href)) return promise;
-          return promise.then((response) => {
-            if (!enabled || !response.ok || !response.headers.get("content-type")?.includes("application/json")) return response;
-            const decorate = (item) => {
-              const json = item.json, text = item.text, clone = item.clone;
-              Object.defineProperties(item, {
-                json: { configurable: true, writable: true, value: async function() {
-                  return clean(await json.call(this));
-                } },
-                text: { configurable: true, writable: true, value: async function() {
-                  const raw = await text.call(this);
-                  if (!enabled || raw.length > 4e6) return raw;
-                  try {
-                    const data = JSON.parse(raw), next = clean(data);
-                    return next === data ? raw : JSON.stringify(next);
-                  } catch {
-                    return raw;
-                  }
-                } },
-                clone: { configurable: true, writable: true, value: function() {
-                  return decorate(clone.call(this));
-                } }
-              });
-              return item;
-            };
-            try {
-              return decorate(response);
-            } catch {
-              return response;
-            }
-          });
+          return promise.then((response) => filterPlayerResponse(response, () => enabled && Date.now() <= lease));
         }
       });
       window.fetch = wrappedFetch;
@@ -91,7 +142,7 @@
         const cache = /* @__PURE__ */ new WeakMap();
         const get = function() {
           const raw = original.get.call(this);
-          if (!enabled || this.readyState !== 4 || !playerEndpoint(this.responseURL, location.href)) return raw;
+          if (!enabled || Date.now() > lease || this.readyState !== 4 || !playerEndpoint(this.responseURL, location.href)) return raw;
           if (this.responseType !== "" && this.responseType !== "text" && this.responseType !== "json") return raw;
           const previous = cache.get(this);
           if (previous && previous.raw === raw) return previous.next;

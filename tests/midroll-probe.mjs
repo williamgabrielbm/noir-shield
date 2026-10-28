@@ -1,0 +1,13 @@
+// Separate seek-assisted scheduled mid-roll probe; never contributes to the 15-minute test.
+import {chromium} from 'playwright';import fs from 'node:fs/promises';import {execFileSync} from 'node:child_process';
+const root=process.cwd(),labels=['midroll-playlist-native-control-2','midroll-playlist-native-protected'];
+const tasks=labels.map(async label=>{
+ const dir=root+'/work/'+label,folder=(await fs.readdir(dir)).find(x=>x.startsWith('profile-'));
+ const ps=`Get-CimInstance Win32_Process -Filter "Name='msedge.exe'" | Where-Object { $_.CommandLine -like '*${folder}*' -and $_.CommandLine -match '--remote-debugging-port=(\\d+)' } | ForEach-Object { $Matches[1] }`;
+ const port=execFileSync('powershell',['-NoProfile','-Command',ps],{encoding:'utf8'}).trim().split(/\s+/)[0];if(!port)throw Error('test browser unavailable');
+ const b=await chromium.connectOverCDP('http://127.0.0.1:'+port),p=b.contexts()[0].pages().find(p=>new URL(p.url()).hostname==='www.youtube.com');
+ const r={label,scope:'Separate seek-assisted mid-roll probe. Seek excluded from all duration validation.',scheduledOffsetSeconds:625.418,started:new Date().toISOString(),snapshots:[]};
+ r.seek=await p.evaluate(()=>{const v=document.querySelector('video'),player=document.querySelector('#movie_player');const before=v.currentTime,id=player.getPlayerResponse?.()?.videoDetails?.videoId;if(id!=='9vKqVkMQHKk')throw Error('Unexpected test video');v.currentTime=595;return {from:before,to:595,videoId:id};});
+ for(let i=0;i<85;i++){await p.waitForTimeout(1000);const s=await p.evaluate(()=>{const p=document.querySelector('#movie_player'),v=p?.querySelector('video'),r=p?.getPlayerResponse?.();return {time:v?.currentTime,paused:v?.paused,ready:v?.readyState,ad:p?.classList.contains('ad-showing'),videoId:r?.videoDetails?.videoId,error:!!document.querySelector('.ytp-error'),anti:/ad blockers? violate|ad blockers? are not allowed|bloqueadores de an[uú]ncios.*(permitidos|termos)/i.test(document.body.innerText)};});r.snapshots.push({elapsed:i+1,...s});if(s.ad&&!r.adScreenshot){await p.screenshot({path:dir+'/midroll-observed.png'});r.adScreenshot=true;}if(i%5===0)await fs.writeFile(dir+'/midroll-probe.json',JSON.stringify(r,null,2));}
+ await p.screenshot({path:dir+'/midroll-final.png'});r.finished=new Date().toISOString();await fs.writeFile(dir+'/midroll-probe.json',JSON.stringify(r,null,2));console.log(JSON.stringify({label,ads:r.snapshots.filter(s=>s.ad).length,last:r.snapshots.at(-1)}));
+});await Promise.allSettled(tasks).then(r=>r.forEach(x=>{if(x.status==='rejected')console.log(x.reason.message.split('\n')[0]);}));process.exit(0);

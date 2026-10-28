@@ -8,15 +8,17 @@ export const LISTS = [
 export type ListId = typeof LISTS[number]['id'];
 export type CustomRule = {domain:string; selector:string};
 export type CustomList = {id:string; slot:number; name:string; url:string; enabled:boolean; updatedAt?:number; error?:string; ruleCount?:number};
+export type YoutubeLab = {network:boolean;player:boolean;skip:boolean;cosmetics:boolean;probes:boolean};
+export const DEFAULT_YOUTUBE_LAB:YoutubeLab = {network:true,player:true,skip:true,cosmetics:true,probes:true};
 export type Settings = {
-  enabled:boolean; level:'standard'|'aggressive'; youtube:boolean; cosmetics:boolean;
+  enabled:boolean; level:'standard'|'aggressive'; youtube:boolean; cosmetics:boolean; youtubeLab:YoutubeLab;
   youtubeDebug?:boolean;
   allowedSites:string[]; customRules:CustomRule[]; customNetwork:string[];
   lists:Record<ListId,boolean>; customLists:CustomList[];
   listMeta:Record<string,{updatedAt?:number; error?:string; ruleCount?:number; duplicates?:number}>;
 };
 export const DEFAULT_SETTINGS:Settings = {
-  enabled:true,level:'standard',youtube:true,cosmetics:true,allowedSites:[],customRules:[],customNetwork:[],
+  enabled:true,level:'standard',youtube:true,cosmetics:true,youtubeLab:{...DEFAULT_YOUTUBE_LAB},allowedSites:[],customRules:[],customNetwork:[],
   lists:{easylist:true,easyprivacy:true,adguard_base:false,adguard_tracking:false,adguard_pt:true},customLists:[],listMeta:{}
 };
 export function normalizeDomain(input:string):string {
@@ -30,7 +32,7 @@ export function isAllowed(host:string, allowed:string[]):boolean {
 export async function getSettings():Promise<Settings> {
   const {settings}=await chrome.storage.local.get('settings');
   if (!settings) return structuredClone(DEFAULT_SETTINGS);
-  return {...structuredClone(DEFAULT_SETTINGS),...settings, lists:{...DEFAULT_SETTINGS.lists,...settings.lists},listMeta:settings.listMeta||{}};
+  return {...structuredClone(DEFAULT_SETTINGS),...settings, lists:{...DEFAULT_SETTINGS.lists,...settings.lists},youtubeLab:{...DEFAULT_YOUTUBE_LAB,...settings.youtubeLab},listMeta:settings.listMeta||{}};
 }
 export async function saveSettings(settings:Settings):Promise<void> { await chrome.storage.local.set({settings}); }
 export function validSelector(selector:string):boolean {

@@ -31,11 +31,16 @@
     failed = false;
     waitingSince = 0;
     lastTime = -1;
+    hasProgress = false;
     debug = false;
-    signal = () => document.dispatchEvent(new CustomEvent("noir-youtube-config-v1", { detail: JSON.stringify({ version: 1, enabled: this.active && !this.failed }) }));
-    configure(enabled, aggressive, debug = false) {
+    playerEnabled = true;
+    skipEnabled = true;
+    signal = () => document.dispatchEvent(new CustomEvent("noir-youtube-config-v1", { detail: JSON.stringify({ version: 1, enabled: this.active && !this.failed && this.playerEnabled }) }));
+    configure(enabled, aggressive, debug = false, lab = { player: true, skip: true }) {
       this.aggressive = aggressive;
       this.debug = debug;
+      this.playerEnabled = lab.player;
+      this.skipEnabled = lab.skip;
       if (!enabled) {
         this.stop();
         return;
@@ -79,6 +84,9 @@
       this.clicks = 0;
       this.lastTime = -1;
       this.waitingSince = 0;
+      this.hasProgress = false;
+      this.failed = false;
+      this.signal();
       this.setState("transition");
     };
     navigateFinish = () => {
@@ -103,7 +111,7 @@
       }, this.aggressive ? 100 : 250);
     };
     inspect = () => {
-      if (!this.active) return;
+      if (!this.active || this.failed) return;
       try {
         const player = document.querySelector("ytd-reel-video-renderer[is-active] #movie_player") || document.querySelector("#movie_player");
         if (player !== this.player) {
@@ -111,6 +119,7 @@
           this.player = player;
           this.clicks = 0;
           this.waitingSince = 0;
+          this.hasProgress = false;
           if (player) {
             this.observer = new MutationObserver(this.schedule);
             this.observer.observe(player, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "disabled", "hidden", "style"] });
@@ -122,7 +131,8 @@
         }
         const video = player.querySelector("video");
         const now = Date.now();
-        if (video && !video.paused && video.readyState < 3 && video.currentTime === this.lastTime) this.waitingSince ||= now;
+        if (video && this.lastTime >= 0 && video.currentTime > this.lastTime) this.hasProgress = true;
+        if (this.hasProgress && video && !video.paused && video.readyState < 3 && video.currentTime === this.lastTime) this.waitingSince ||= now;
         else this.waitingSince = 0;
         this.lastTime = video?.currentTime ?? -1;
         if (video?.error || this.waitingSince && now - this.waitingSince > 12e3) {
@@ -140,7 +150,7 @@
         this.setState("ad-detected");
         const skip = [...player.querySelectorAll(".ytp-ad-skip-button, .ytp-ad-skip-button-modern, .ytp-skip-ad-button")].find((node) => !node.disabled && !node.hidden && node.getBoundingClientRect().width > 0 && getComputedStyle(node).visibility !== "hidden" && getComputedStyle(node).display !== "none");
         this.setState(skip ? "ad-skippable" : "ad-unskippable");
-        if (skip && this.clicks < 3 && now - this.lastClick >= 1e3 && player.classList.contains("ad-showing")) {
+        if (this.skipEnabled && skip && this.clicks < 3 && now - this.lastClick >= 1e3 && player.classList.contains("ad-showing")) {
           this.clicks++;
           this.lastClick = now;
           skip.click();
@@ -172,11 +182,13 @@
   };
 
   // src/shared.ts
+  var DEFAULT_YOUTUBE_LAB = { network: true, player: true, skip: true, cosmetics: true, probes: true };
   var DEFAULT_SETTINGS = {
     enabled: true,
     level: "standard",
     youtube: true,
     cosmetics: true,
+    youtubeLab: { ...DEFAULT_YOUTUBE_LAB },
     allowedSites: [],
     customRules: [],
     customNetwork: [],
@@ -199,7 +211,7 @@
   async function getSettings() {
     const { settings } = await chrome.storage.local.get("settings");
     if (!settings) return structuredClone(DEFAULT_SETTINGS);
-    return { ...structuredClone(DEFAULT_SETTINGS), ...settings, lists: { ...DEFAULT_SETTINGS.lists, ...settings.lists }, listMeta: settings.listMeta || {} };
+    return { ...structuredClone(DEFAULT_SETTINGS), ...settings, lists: { ...DEFAULT_SETTINGS.lists, ...settings.lists }, youtubeLab: { ...DEFAULT_YOUTUBE_LAB, ...settings.youtubeLab }, listMeta: settings.listMeta || {} };
   }
   function validSelector(selector) {
     if (!selector || selector.length > 240 || /[{};\n\r]/.test(selector) || /:(?:has|contains|matches-css|xpath|upward|remove)\b/i.test(selector)) return false;
@@ -228,7 +240,7 @@
     try {
       const settings = await getSettings();
       if (version !== configVersion) return;
-      youtubeEngine.configure(settings.enabled && settings.youtube && !isAllowed(domain, settings.allowedSites) && /(^|\.)youtube\.com$/.test(domain), settings.level === "aggressive", settings.youtubeDebug === true);
+      youtubeEngine.configure(settings.enabled && settings.youtube && !isAllowed(domain, settings.allowedSites) && /(^|\.)youtube\.com$/.test(domain), settings.level === "aggressive", settings.youtubeDebug === true, settings.youtubeLab);
     } catch {
       youtubeEngine.stop();
     }
@@ -260,8 +272,8 @@
         for (let i = 0; i < safe.length; i += 100) chunks.push(`${safe.slice(i, i + 100).join(",")} { display: none !important; }`);
         style(STYLE_ID, chunks.join("\n"));
       } else removeStyle(STYLE_ID);
-      youtubeEngine.configure(youtubeEnabled, data.aggressive, data.youtubeDebug);
-      if (youtubeEnabled && data.cosmetics) style(YT_STYLE_ID, `${YOUTUBE_SELECTORS.join(",")} { display:none !important; }`);
+      youtubeEngine.configure(youtubeEnabled, data.aggressive, data.youtubeDebug, data.youtubeLab);
+      if (youtubeEnabled && data.cosmetics && data.youtubeLab?.cosmetics !== false) style(YT_STYLE_ID, `${YOUTUBE_SELECTORS.join(",")} { display:none !important; }`);
       else removeStyle(YT_STYLE_ID);
     } catch {
       if (version !== refreshVersion) return;

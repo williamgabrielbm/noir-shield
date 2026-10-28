@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 const {outputFiles}=await build({entryPoints:['src/youtube/data.ts'],bundle:true,write:false,format:'esm',platform:'node'});
-const {sanitizePlayer,playerEndpoint}=await import(`data:text/javascript;base64,${Buffer.from(outputFiles[0].text).toString('base64')}`);
+const {sanitizePlayer,sanitizePlayerPayload,playerEndpoint}=await import(`data:text/javascript;base64,${Buffer.from(outputFiles[0].text).toString('base64')}`);
 const fixture=()=>({videoDetails:{videoId:'fixture'},playabilityStatus:{status:'OK'},streamingData:{formats:[{url:'https://media.example/video'}]},adPlacements:[{adPlacementRenderer:{}}],playerAds:[{playerLegacyDesktopWatchAdsRenderer:{}}],adSlots:[{adSlotRenderer:{}}],captions:{label:'keep'},playbackTracking:{keep:true}});
 test('removes only recognized top-level ad arrays without mutating original',()=>{
   const before=fixture(), snapshot=structuredClone(before), after=sanitizePlayer(before);
@@ -26,4 +26,44 @@ test('only exact same-origin player API is eligible',()=>{
   const base='https://www.youtube.com/watch?v=fixture';
   for(const value of ['/youtubei/v1/player?prettyPrint=false',new Request('https://www.youtube.com/youtubei/v1/player')])assert.equal(playerEndpoint(value,base),true);
   for(const value of ['/youtubei/v1/player-extra','/youtubei/v1/next','https://evil.example/youtubei/v1/player','https://www.youtube.com.evil.example/youtubei/v1/player','https://googlevideo.com/videoplayback'])assert.equal(playerEndpoint(value,base),false);
+});
+
+test('get_watch array filters only explicit playerResponse envelopes',()=>{
+ const player=fixture(),watchNextResponse={adSlots:['ordinary nested content'],keep:true};
+ const value=[{playerResponse:player,responseContext:{keep:true}},{watchNextResponse}];
+ const snapshot=structuredClone(value),next=sanitizePlayerPayload(value);
+ assert.notEqual(next,value);assert.deepEqual(value,snapshot);
+ assert.deepEqual(next[0].playerResponse.adSlots,[]);
+ assert.equal(next[0].playerResponse.streamingData,player.streamingData);
+ assert.equal(next[0].responseContext,value[0].responseContext);
+ assert.equal(next[1],value[1]);assert.equal(next[1].watchNextResponse,watchNextResponse);
+ assert.equal(sanitizePlayerPayload(next),next);
+});
+test('payload preserves nested live, restricted, unknown and unrelated envelopes',()=>{
+ for(const value of [
+  [{playerResponse:{...fixture(),videoDetails:{videoId:'live',isLiveContent:true}}}],
+  {playerResponse:{...fixture(),playabilityStatus:{status:'ERROR'}}},
+  [{watchNextResponse:{playerResponse:fixture()}}],
+  [null,42,{playerResponse:{adSlots:[{adSlotRenderer:{}}]}}]
+ ])assert.equal(sanitizePlayerPayload(value),value);
+ const value={playerResponse:fixture(),keep:{}};assert.notEqual(sanitizePlayerPayload(value),value);
+});
+test('get_watch endpoint is exact and same origin, including Request inputs',()=>{
+ const base='https://www.youtube.com/watch?v=test';
+ for(const input of ['/youtubei/v1/get_watch?prettyPrint=false',new Request('https://www.youtube.com/youtubei/v1/get_watch')])assert.equal(playerEndpoint(input,base),true);
+ for(const input of ['/youtubei/v1/get_watch_extra','/youtubei/v1/get_watch/drm','https://evil.example/youtubei/v1/get_watch','/youtubei/v1/next'])assert.equal(playerEndpoint(input,base),false);
+});
+
+test('observed reel sequence drops only entries explicitly marked isAd true',()=>{
+ const content={command:{reelWatchEndpoint:{videoId:'content'}}};
+ const ad={command:{reelWatchEndpoint:{adClientParams:{isAd:true}}}};
+ const ordinary={command:{reelWatchEndpoint:{adClientParams:{isAd:false}}}};
+ const unknown={command:{reelWatchEndpoint:{adClientParams:{isAd:'true'}}}};
+ const value={entries:[content,ad,ordinary,unknown,null],continuationEndpoint:{keep:true}};
+ const next=sanitizePlayerPayload(value);
+ assert.deepEqual(next.entries,[content,ordinary,unknown,null]);
+ assert.equal(next.entries[0],content);assert.equal(next.continuationEndpoint,value.continuationEndpoint);
+ assert.equal(value.entries.length,5);assert.equal(sanitizePlayerPayload(next),next);
+ assert.equal(playerEndpoint('/youtubei/v1/reel/reel_watch_sequence?prettyPrint=false','https://www.youtube.com/shorts/id'),true);
+ assert.equal(playerEndpoint('/youtubei/v1/reel/reel_watch_sequence_extra','https://www.youtube.com'),false);
 });

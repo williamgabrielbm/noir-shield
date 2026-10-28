@@ -1,9 +1,8 @@
-import {playerEndpoint, sanitizePlayer} from './data';
+import {playerEndpoint, sanitizePlayerPayload} from './data';
+import {filterPlayerResponse} from './response';
 
 (() => {
-  const scope = window as Window & {__noirMain?: boolean; ytInitialPlayerResponse?: unknown};
-  if (scope.__noirMain) return;
-  scope.__noirMain = true;
+  const scope = window as Window & {ytInitialPlayerResponse?: unknown};
   const eventName = 'noir-youtube-config-v1';
   let enabled = false, lease = 0;
   let originalFetch: typeof fetch | undefined, wrappedFetch: typeof fetch | undefined;
@@ -14,7 +13,7 @@ import {playerEndpoint, sanitizePlayer} from './data';
   const xhrHooks: {key:'response'|'responseText'; original:PropertyDescriptor; get:()=>unknown}[] = [];
   const clean = (value: unknown) => {
     if (!enabled || Date.now() > lease) return value;
-    try { return sanitizePlayer(value); } catch { return value; }
+    try { return sanitizePlayerPayload(value); } catch { return value; }
   };
   function install() {
     if (wrappedFetch) return;
@@ -23,25 +22,7 @@ import {playerEndpoint, sanitizePlayer} from './data';
       apply(target, receiver, args) {
         const promise = Reflect.apply(target, receiver, args) as Promise<Response>;
         if (!enabled || !playerEndpoint(args[0], location.href)) return promise;
-        return promise.then(response => {
-          if (!enabled || !response.ok || !response.headers.get('content-type')?.includes('application/json')) return response;
-          // Preserve Response identity, URL, status, headers, streams, aborts and bodyUsed.
-          // Only consumers using json()/text()/clone() opt into the supported decode path.
-          const decorate = (item: Response): Response => {
-            const json = item.json, text = item.text, clone = item.clone;
-            Object.defineProperties(item, {
-              json: {configurable:true, writable:true, value: async function(this: Response) {return clean(await json.call(this));}},
-              text: {configurable:true, writable:true, value: async function(this: Response) {
-                const raw = await text.call(this);
-                if (!enabled || raw.length > 4_000_000) return raw;
-                try {const data = JSON.parse(raw), next = clean(data); return next === data ? raw : JSON.stringify(next);} catch {return raw;}
-              }},
-              clone: {configurable:true, writable:true, value: function(this: Response) {return decorate(clone.call(this));}}
-            });
-            return item;
-          };
-          try {return decorate(response);} catch {return response;}
-        });
+        return promise.then(response => filterPlayerResponse(response, () => enabled && Date.now() <= lease));
       }
     });
     window.fetch = wrappedFetch;
@@ -52,7 +33,7 @@ import {playerEndpoint, sanitizePlayer} from './data';
       const get = function(this: XMLHttpRequest) {
         // Native getter runs first, preserving brand checks and InvalidStateError.
         const raw = original.get!.call(this);
-        if (!enabled || this.readyState !== 4 || !playerEndpoint(this.responseURL, location.href)) return raw;
+        if (!enabled || Date.now() > lease || this.readyState !== 4 || !playerEndpoint(this.responseURL, location.href)) return raw;
         if (this.responseType !== '' && this.responseType !== 'text' && this.responseType !== 'json') return raw;
         const previous = cache.get(this);
         if (previous && previous.raw === raw) return previous.next;

@@ -1,27 +1,40 @@
-# Texto para a Chrome Web Store — rascunho de revisão
+# Chrome Web Store — Noir Shield 0.2.3 beta
+
+Item existente: camcmlekdnfckogegmeckemefkfpmmpa. Atualizar este item; não criar outra extensão.
 
 Nome: Noir Shield
 
-Resumo: Bloqueie anúncios e rastreadores com filtros locais, controles por site e proteção parcial para o YouTube.
+Resumo do manifest: Bloqueio local de anúncios e rastreadores com listas verificáveis.
 
-Categoria sugerida: Produtividade
+Categoria existente: Privacidade e segurança. Idioma: português (Brasil).
 
-Descrição longa:
+## Descrição
 
-Noir Shield é um bloqueador de anúncios de código aberto para Chrome e Edge. Usa regras declarativas do navegador e listas de filtros conhecidas para bloquear requisições publicitárias e rastreadores separáveis do conteúdo. Também aplica filtros visuais para remover espaços e componentes publicitários identificáveis nas páginas.
+Noir Shield é um bloqueador gratuito e de código aberto para Chrome e Edge. Bloqueia anúncios e rastreadores com regras locais do navegador e listas conhecidas, incluindo EasyList, EasyPrivacy e AdGuard. Filtros visuais também removem componentes publicitários identificáveis das páginas.
 
-Você pode pausar a proteção por site, escolher listas, adicionar regras e listas próprias, selecionar elementos para ocultar e exportar suas configurações. A interface é escura e compacta. As preferências ficam no seu navegador; não há conta ou telemetria própria.
+Você pode pausar a proteção por site, escolher listas, adicionar regras e listas próprias, selecionar elementos para ocultar e exportar suas configurações. As preferências ficam no seu navegador; não há conta, publicidade própria ou telemetria do Noir Shield.
 
-No YouTube, o Noir Shield tenta bloquear requisições publicitárias identificáveis, filtrar estruturas publicitárias reconhecidas do player, ocultar elementos publicitários e acionar o botão nativo de pular anúncios quando ele aparece. A entrega de anúncios pode mudar; anúncios inseridos no mesmo fluxo do vídeo podem continuar sendo reproduzidos. O modo agressivo reduz o intervalo de detecção sem alterar a velocidade ou posição do vídeo. Não prometemos bloquear todos os anúncios do YouTube ou Twitch.
+A versão 0.2.3 melhora o tratamento de anúncios do YouTube no carregamento inicial, na navegação entre vídeos e nas sequências de Shorts. Corrige um caminho de navegação que podia deixar anúncios escaparem e mantém a filtragem coerente entre as formas de leitura das respostas do player. O fallback usa o botão nativo de pular quando disponível, sem alterar o tempo, a velocidade ou o volume do conteúdo e sem esconder avisos anti-adblock.
 
-As estatísticas de bloqueio dependem das informações que o navegador disponibiliza. Quando não existe uma contagem confiável, a interface mostra “indisponível”, em vez de inventar números.
+Nos testes reais documentados em Chrome e Edge, controles sem proteção exibiram anúncios durante o vídeo; as sessões protegidas comparáveis reproduziram por mais de 15 minutos contínuos, sem anúncios nem aviso anti-adblock observado. Os resultados e os limites dos testes estão no repositório. A entrega de anúncios muda por sessão e formato; não prometemos bloqueio universal do YouTube ou Twitch.
 
-As listas incluídas funcionam sem conexão. Atualizá-las estabelece conexão HTTPS direta com seus provedores. Consulte a política de privacidade e as licenças do projeto para detalhes.
+As estatísticas dependem das informações que o navegador disponibiliza. Quando não há contagem confiável, a interface mostra “indisponível”. As listas incluídas funcionam sem conexão; atualizá-las estabelece conexão HTTPS direta com seus provedores. Nenhum código JavaScript remoto é executado.
 
-Finalidade única para a aba Privacidade: Bloquear anúncios e rastreadores em páginas visitadas e oferecer controles locais de filtragem por site.
+Código, resultados dos testes e política de privacidade: https://github.com/williamgabrielbm/noir-shield
 
-Dados para declaração de privacidade: atividade de navegação/domínios consultados e conteúdo da página selecionado manualmente são processados localmente para aplicar filtros e exceções; configurações e contagens disponíveis ficam no armazenamento local. Não são vendidos, usados para publicidade própria ou enviados ao desenvolvedor. O download opcional/agendado de listas ocorre por HTTPS diretamente dos provedores indicados na política.
+## Notas da versão
 
-Permissões do pacote da loja: `declarativeNetRequest` aplica as regras; `activeTab` permite consultar correspondências da aba quando o usuário abre o popup; `storage` guarda preferências; `tabs` identifica a aba e atualiza páginas abertas; `alarms` agenda atualização; `contextMenus` oferece seleção de elemento; acesso HTTP/HTTPS é necessário para aplicar filtros em sites e baixar listas. `declarativeNetRequestFeedback` fica somente no build descompactado de desenvolvimento.
+- Corrigida filtragem de respostas de navegação SPA do YouTube (get_watch).
+- Leitura coerente do corpo filtrado em fetch, clones e streams.
+- Tratamento seletivo de entradas publicitárias explícitas nas sequências de Shorts.
+- Recuperação por vídeo e preservação do buffering inicial.
+- Controles DNR e listas independentes preservados.
+- Mid-roll real comparado com controles em Chrome e Edge; evidências no repositório.
 
-Antes de submeter: conferir o texto com o comportamento da versão final, publicar `PRIVACY.md` num URL público, produzir captura real 1280×800 ou 640×400 da interface, completar a aba Privacidade e testar no Chrome instalado com anúncios reais.
+## Privacidade e submissão
+
+Finalidade única: bloquear anúncios e rastreadores em páginas visitadas e oferecer controles locais de filtragem por site.
+
+As permissões do pacote da loja são as mesmas do item 0.2.0 publicado: declarativeNetRequest, storage, tabs, alarms, contextMenus, activeTab e acesso HTTP/HTTPS. Não incluir declarativeNetRequestFeedback no pacote publicado. Justificativas e comportamento de dados estão em PRIVACY.md e README.md.
+
+Manter a política de privacidade, URLs de suporte, distribuição pública e recursos gráficos existentes. Não solicitar dispensa de análise como atualização apenas de regras estáticas: esta versão altera também o motor JavaScript. Submissão para análise não equivale a aprovação ou publicação pela loja.

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noir Shield — Laboratório YouTube</title>
+  <style>
+    :root{color-scheme:dark;font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;background:#0d1115;color:#e9f0f5}
+    *{box-sizing:border-box}body{max-width:860px;margin:0 auto;padding:34px 20px 64px}
+    .top{display:flex;gap:16px;align-items:center;margin-bottom:28px}.logo{border:1px solid #315a6a;background:#15323d;color:#85d8fc;border-radius:14px;width:52px;height:52px;display:grid;place-items:center;font-size:24px;font-weight:800}
+    h1{font-size:24px;line-height:1.25;margin:0}h2{font-size:16px;margin:0 0 14px}p{margin:7px 0;color:#b6c3cc}
+    .pill{font-size:12px;background:#213743;padding:5px 9px;border:1px solid #386174;border-radius:12px;color:#98d9fa}
+    .card{border:1px solid #2c3a43;background:#151d23;border-radius:16px;padding:20px;margin:18px 0}
+    .flags{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    label.flag{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid #30404a;background:#1a252d;border-radius:10px;cursor:pointer}
+    label.flag input{accent-color:#71cdf6;transform:scale(1.3);margin:6px 3px 0 2px}
+    .flag span{display:block}.flag small{display:block;color:#aebbc4;font-size:12px;margin-top:3px}
+    .presets{display:flex;flex-wrap:wrap;gap:9px}button{font:inherit;color:#e9f0f5;cursor:pointer;border-radius:10px;background:#253741;border:1px solid #3f5763;padding:9px 13px}
+    button:hover{background:#304a59}button:focus-visible,a:focus-visible{outline:2px solid #7bd0f8;outline-offset:2px}
+    button.primary{background:#146a8d;border-color:#2389b4}
+    .actions{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}
+    .status{font-size:13px;padding:12px;border-radius:8px;background:#1a303e;border:1px solid #35546a;color:#b3e3ff}
+    .status.error{color:#ffbaba;border-color:#924a4a;background:#3b2326}
+    .note{font-size:13px;border-left:3px solid #5f899a;padding-left:12px}
+    a{color:#8bdfff}footer{font-size:12px;color:#8798a3;margin-top:20px}
+    @media(max-width:650px){.flags{grid-template-columns:1fr}.top{align-items:flex-start}}
+  </style>
+  <script src="youtube-lab.js" defer></script>
+</head>
+<body>
+  <header class="top"><div class="logo">N</div><div><div class="pill">Versão de teste · 0.2.3 YouTube Lab</div><h1>Laboratório do YouTube</h1><p>Experimento com exceções seletivas para sinais de detecção, sem liberar mídia de anúncios.</p></div></header>
+  <div id="status" class="status" role="status" aria-live="polite">Lendo configurações…</div>
+  <section class="card">
+    <h2>Camadas independentes</h2>
+    <div class="flags">
+      <label class="flag"><input data-flag="network" type="checkbox"><span><b>Bloqueio de rede</b><small>Regras DNR do YouTube e das listas. Ao desligar, o navegador permite as requisições originadas no YouTube.</small></span></label>
+      <label class="flag"><input data-flag="player" type="checkbox"><span><b>Tratamento de dados do player</b><small>Intercepção de fetch, XHR e resposta inicial para remover estruturas reconhecidas de anúncios.</small></span></label>
+      <label class="flag"><input data-flag="skip" type="checkbox"><span><b>Pular anúncio automaticamente</b><small>Clica no botão nativo de pular, quando disponível. Não altera velocidade ou tempo do vídeo.</small></span></label>
+      <label class="flag"><input data-flag="cosmetics" type="checkbox"><span><b>Filtros visuais do YouTube</b><small>Controla os filtros gerais e os específicos nas páginas do YouTube. Não afeta outros sites.</small></span></label>
+      <label class="flag"><input data-flag="probes" type="checkbox"><span><b>Permitir verificações de anúncio</b><small>Permite somente dois recursos de status observados do DoubleClick (pagead/id e instream/ad_status.js), sem liberar a mídia publicitária ou /youtubei/v1/player.</small></span></label>
+    </div>
+  </section>
+  <section class="card"><h2>Perfis para diagnóstico</h2><div class="presets" id="presets"></div>
+    <p class="note">Comece pelo perfil “Equilíbrio experimental”. Compare o mesmo vídeo e a mesma conta nos perfis. Se o alerta desaparecer ao desligar uma camada, ela se torna uma suspeita, não uma prova definitiva. Em “Compatibilidade”, anúncios poderão ser exibidos.</p>
+  </section>
+  <section class="card"><h2>Executar teste</h2>
+    <p>Depois de alterar os controles, recarregue o YouTube. Confira se o vídeo inicia, se há aviso de bloqueador, se aparece propaganda e se o player trava. Teste vídeos com anúncio prévio e intervalos.</p>
+    <div class="actions"><button id="reload" class="primary">Recarregar abas do YouTube</button><button id="open">Abrir vídeo de teste</button><button id="restore">Restaurar configuração original</button></div>
+    <p id="global-state" class="note"></p>
+  </section>
+  <footer>Exceções estreitas e verificáveis; ainda não há comprovação de indetectabilidade. Nenhuma telemetria é enviada pelo Noir Shield.</footer>
+</body>
+</html>

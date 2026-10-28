@@ -10,7 +10,7 @@ if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
   throw 'Execute npm run build antes de criar o pacote.'
 }
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-$manifest.permissions = @($manifest.permissions | Where-Object { $_ -ne 'declarativeNetRequestFeedback' }) + 'activeTab'
+$manifest.permissions = @(@($manifest.permissions | Where-Object { $_ -ne 'declarativeNetRequestFeedback' }) + 'activeTab' | Select-Object -Unique)
 if (-not $Destination) {
   $Destination = Join-Path (Split-Path -Parent $project) "NoirShield-CWS-$($manifest.version).zip"
 }
@@ -23,10 +23,9 @@ if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
   throw "A pasta de destino não existe: $parent"
 }
 
-$files = @('manifest.json', 'background.js', 'content.js', 'youtube-main.js', 'popup.html', 'popup.js', 'options.html', 'options.js', 'ui.css', 'README.md', 'PRIVACY.md', 'LICENSE')
-$files += Get-ChildItem -LiteralPath (Join-Path $dist 'docs') -File -Recurse | ForEach-Object { [IO.Path]::GetRelativePath($dist, $_.FullName) }
-$files += Get-ChildItem -LiteralPath (Join-Path $dist 'icons') -File -Recurse | ForEach-Object { [IO.Path]::GetRelativePath($dist, $_.FullName) }
-$files += Get-ChildItem -LiteralPath (Join-Path $dist 'rules') -File -Recurse | ForEach-Object { [IO.Path]::GetRelativePath($dist, $_.FullName) }
+$files = @('manifest.json', 'background.js', 'content.js', 'youtube-main.js', 'popup.html', 'popup.js', 'options.html', 'options.js', 'youtube-lab.html', 'youtube-lab.js', 'ui.css', 'PRIVACY.md', 'LICENSE')
+$files += Get-ChildItem -LiteralPath (Join-Path $dist 'icons') -File -Recurse | ForEach-Object { $_.FullName.Substring($dist.Length + 1) }
+$files += Get-ChildItem -LiteralPath (Join-Path $dist 'rules') -File -Recurse | ForEach-Object { $_.FullName.Substring($dist.Length + 1) }
 foreach ($relative in $files) {
   if (-not (Test-Path -LiteralPath (Join-Path $dist $relative) -PathType Leaf)) {
     throw "Arquivo obrigatório ausente: $relative"
@@ -59,7 +58,7 @@ try {
   $manifestEntry = $verify.GetEntry('manifest.json')
   $reader = [IO.StreamReader]::new($manifestEntry.Open())
   try { $packedManifest = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
-  foreach ($script in @($packedManifest.content_scripts | ForEach-Object { $_.js }) + @($packedManifest.background.service_worker)) {
+  foreach ($script in @($packedManifest.content_scripts | ForEach-Object { $_.js }) + @($packedManifest.background.service_worker, $packedManifest.options_page, $packedManifest.action.default_popup, 'youtube-lab.html', 'youtube-lab.js')) {
     if (-not ($names -contains $script)) { throw "Script declarado no manifest ausente do pacote: $script" }
   }
   if (($packedManifest.permissions -contains 'declarativeNetRequestFeedback') -or -not ($packedManifest.permissions -contains 'activeTab')) {

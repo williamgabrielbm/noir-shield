@@ -19,10 +19,14 @@ export class YoutubeEngine {
   private failed = false;
   private waitingSince = 0;
   private lastTime = -1;
+  private hasProgress = false;
   private debug = false;
-  private signal = () => document.dispatchEvent(new CustomEvent('noir-youtube-config-v1', {detail:JSON.stringify({version:1,enabled:this.active&&!this.failed})}));
-  configure(enabled: boolean, aggressive: boolean, debug = false) {
+  private playerEnabled = true;
+  private skipEnabled = true;
+  private signal = () => document.dispatchEvent(new CustomEvent('noir-youtube-config-v1', {detail:JSON.stringify({version:1,enabled:this.active&&!this.failed&&this.playerEnabled})}));
+  configure(enabled: boolean, aggressive: boolean, debug = false, lab: {player:boolean;skip:boolean} = {player:true,skip:true}) {
     this.aggressive = aggressive; this.debug = debug;
+    this.playerEnabled = lab.player; this.skipEnabled = lab.skip;
     if (!enabled) {this.stop(); return;}
     if (this.active) {this.signal(); return;}
     this.active = true; this.failed = false;
@@ -47,7 +51,9 @@ export class YoutubeEngine {
   }
   private navigateStart = () => {
     this.observer?.disconnect(); this.player = null;
-    this.clicks = 0; this.lastTime = -1; this.waitingSince = 0;
+    this.clicks = 0; this.lastTime = -1; this.waitingSince = 0; this.hasProgress = false;
+    // A failed video does not disable protection on the next explicit SPA navigation.
+    this.failed = false; this.signal();
     this.setState('transition');
   };
   private navigateFinish = () => {this.navigateStart(); this.schedule();};
@@ -59,11 +65,11 @@ export class YoutubeEngine {
     this.pending = setTimeout(() => {this.pending = undefined; this.inspect();}, this.aggressive ? 100 : 250);
   };
   private inspect = () => {
-    if (!this.active) return;
+    if (!this.active || this.failed) return;
     try {
       const player = document.querySelector('ytd-reel-video-renderer[is-active] #movie_player') || document.querySelector('#movie_player');
       if (player !== this.player) {
-        this.observer?.disconnect(); this.player = player; this.clicks = 0; this.waitingSince = 0;
+        this.observer?.disconnect(); this.player = player; this.clicks = 0; this.waitingSince = 0; this.hasProgress = false;
         if (player) {
           this.observer = new MutationObserver(this.schedule);
           this.observer.observe(player,{childList:true,subtree:true,attributes:true,attributeFilter:['class','disabled','hidden','style']});
@@ -72,12 +78,14 @@ export class YoutubeEngine {
       if (!player) {this.setState('idle'); return;}
       const video = player.querySelector<HTMLVideoElement>('video');
       const now = Date.now();
-      if (video && !video.paused && video.readyState < 3 && video.currentTime === this.lastTime) this.waitingSince ||= now;
+      if (video && this.lastTime >= 0 && video.currentTime > this.lastTime) this.hasProgress = true;
+      // Initial buffering is not a stalled playback; media may legitimately take >12 s to start.
+      if (this.hasProgress && video && !video.paused && video.readyState < 3 && video.currentTime === this.lastTime) this.waitingSince ||= now;
       else this.waitingSince = 0;
       this.lastTime = video?.currentTime ?? -1;
       if (video?.error || (this.waitingSince && now - this.waitingSince > 12000)) {
         this.setState('loading-failed');
-        // Fail open for the rest of this document. Do not reload or retry a broken response.
+        // Fail open for this video until an explicit navigation. Do not reload or retry a broken response.
         this.failed = true; this.signal(); this.setState('recovering'); return;
       }
       if (!player.classList.contains('ad-showing')) {
@@ -87,7 +95,7 @@ export class YoutubeEngine {
       const skip = [...player.querySelectorAll<HTMLButtonElement>('.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .ytp-skip-ad-button')]
         .find(node => !node.disabled && !node.hidden && node.getBoundingClientRect().width > 0 && getComputedStyle(node).visibility !== 'hidden' && getComputedStyle(node).display !== 'none');
       this.setState(skip ? 'ad-skippable' : 'ad-unskippable');
-      if (skip && this.clicks < 3 && now - this.lastClick >= 1000 && player.classList.contains('ad-showing')) {
+      if (this.skipEnabled && skip && this.clicks < 3 && now - this.lastClick >= 1000 && player.classList.contains('ad-showing')) {
         this.clicks++; this.lastClick = now; skip.click(); this.setState('transition');
       }
       // No seeking, speed changes or muting: ad-showing can lag behind a reused media element.

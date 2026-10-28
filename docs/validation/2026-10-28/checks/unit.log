@@ -1,0 +1,31 @@
+
+> noir-shield@0.2.3 test
+> node --test tests/*.test.mjs
+
+✔ compiles safe anchored network rule (3.2135ms)
+✔ supports exceptions and site scope (0.5612ms)
+✔ rejects unsupported syntax rather than widening it (0.3471ms)
+✔ deduplicates across lists (0.9954ms)
+✔ all fetch body readers agree, including clone streams and bytes (29.7807ms)
+✔ inactive, invalid, unknown-schema and oversized bodies retain original identity and body (10.5669ms)
+✔ turning off protection during read preserves original response (0.605ms)
+✔ YouTube lab defaults preserve the former behavior (1.1175ms)
+✔ reading old and partially migrated settings preserves all controls (0.9173ms)
+✔ removes only recognized top-level ad arrays without mutating original (2.4808ms)
+✔ normal response keeps identity and nested content fields (0.1353ms)
+✔ live, restricted, malformed and incomplete responses fail open (0.1255ms)
+✔ unknown ad schema is retained, repeated sanitization is idempotent (0.1569ms)
+✔ frozen input remains usable (0.6444ms)
+✔ only exact same-origin player API is eligible (20.8766ms)
+✔ get_watch array filters only explicit playerResponse envelopes (0.3263ms)
+✔ payload preserves nested live, restricted, unknown and unrelated envelopes (0.7586ms)
+✔ get_watch endpoint is exact and same origin, including Request inputs (0.3022ms)
+✔ observed reel sequence drops only entries explicitly marked isAd true (0.2674ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1153.6142

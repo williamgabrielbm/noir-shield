@@ -1,0 +1,10 @@
+
+> noir-shield@0.2.3 build
+> node scripts/build.mjs
+
+easylist: 4500 network, 3000 cosmetic, 8 duplicates
+easyprivacy: 4500 network, 24 cosmetic, 1 duplicates
+adguard_base: 4500 network, 3000 cosmetic, 490 duplicates
+adguard_tracking: 4500 network, 196 cosmetic, 165 duplicates
+adguard_pt: 960 network, 2939 cosmetic, 3 duplicates
+Built [project]\dist

@@ -8,6 +8,20 @@
     { id: "adguard_tracking", name: "AdGuard Tracking Protection", url: "https://filters.adtidy.org/extension/chromium/filters/3.txt", defaultOn: false, kind: "trackers" },
     { id: "adguard_pt", name: "AdGuard Spanish/Portuguese", url: "https://filters.adtidy.org/extension/chromium/filters/9.txt", defaultOn: true, kind: "ads" }
   ];
+  var DEFAULT_YOUTUBE_LAB = { network: true, player: true, skip: true, cosmetics: true, probes: true };
+  var DEFAULT_SETTINGS = {
+    enabled: true,
+    level: "standard",
+    youtube: true,
+    cosmetics: true,
+    youtubeLab: { ...DEFAULT_YOUTUBE_LAB },
+    allowedSites: [],
+    customRules: [],
+    customNetwork: [],
+    lists: { easylist: true, easyprivacy: true, adguard_base: false, adguard_tracking: false, adguard_pt: true },
+    customLists: [],
+    listMeta: {}
+  };
 
   // src/popup.ts
   var $ = (id) => document.getElementById(id);
