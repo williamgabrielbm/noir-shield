@@ -41,10 +41,26 @@
     });
     return changed ? next : value;
   }
-  function playerEndpoint(input, base) {
+  var requestUrl = Object.getOwnPropertyDescriptor(Request.prototype, "url")?.get;
+  var urlHref = Object.getOwnPropertyDescriptor(URL.prototype, "href")?.get;
+  function requestAddress(input) {
+    if (typeof input === "string") return input;
     try {
-      const url = new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input instanceof Request ? input.url : "", base);
-      return url.origin === new URL(base).origin && (url.pathname === "/youtubei/v1/player" || url.pathname === "/youtubei/v1/get_watch" || url.pathname === "/youtubei/v1/reel/reel_watch_sequence");
+      if (requestUrl) return Reflect.apply(requestUrl, input, []);
+    } catch {
+    }
+    try {
+      if (urlHref) return Reflect.apply(urlHref, input, []);
+    } catch {
+    }
+    return void 0;
+  }
+  function playerEndpoint(input, base, allowedOrigin) {
+    try {
+      const address = requestAddress(input);
+      if (address === void 0) return false;
+      const url = new URL(address, base);
+      return url.origin === (allowedOrigin ?? new URL(base).origin) && (url.pathname === "/youtubei/v1/player" || url.pathname === "/youtubei/v1/get_watch" || url.pathname === "/youtubei/v1/reel/reel_watch_sequence");
     } catch {
       return false;
     }
@@ -52,7 +68,7 @@
 
   // src/youtube/response.ts
   var MAX_BYTES = 4e6;
-  async function filterPlayerResponse(response, active) {
+  async function filterPlayerResponse(response, active, ResponseType = Response, HeadersType = Headers) {
     if (!active() || !response.ok || !response.headers.get("content-type")?.includes("application/json")) return response;
     if (Number(response.headers.get("content-length")) > MAX_BYTES) return response;
     const copy = response.clone();
@@ -82,7 +98,7 @@
       const data = JSON.parse(new TextDecoder().decode(bytes));
       const next = sanitizePlayerPayload(data);
       if (next === data || !active()) return response;
-      const headers = new Headers(response.headers);
+      const headers = new HeadersType(response.headers);
       for (const name of ["content-length", "content-encoding", "etag", "content-md5", "digest"]) headers.delete(name);
       const decorate = (item) => {
         const clone = item.clone;
@@ -96,7 +112,7 @@
         });
         return item;
       };
-      return decorate(new Response(JSON.stringify(next), { status: response.status, statusText: response.statusText, headers }));
+      return decorate(new ResponseType(JSON.stringify(next), { status: response.status, statusText: response.statusText, headers }));
     } catch {
       void reader.cancel().catch(() => {
       });
@@ -106,10 +122,172 @@
     }
   }
 
+  // src/youtube/frames.ts
+  function blankFrameHooks(root, active, wrapFetch) {
+    let realms = /* @__PURE__ */ new WeakMap();
+    const records = /* @__PURE__ */ new Set();
+    let frames = /* @__PURE__ */ new WeakMap();
+    const frameRecords = /* @__PURE__ */ new Set();
+    let started = false;
+    function protectRealm(realm, top = false) {
+      try {
+        if (!started || !active()) return;
+        const address = new URL(realm.location.href);
+        if (!top && (address.protocol !== "about:" || !["blank", "srcdoc"].includes(address.pathname))) return;
+        const prototype = realm.HTMLIFrameElement.prototype;
+        if (realms.get(realm)?.prototype === prototype) return;
+        const entry = { realm, prototype, active, restore: [] };
+        realms.set(realm, entry);
+        for (const ref of records) if (!ref.deref()) records.delete(ref);
+        records.add(new WeakRef(entry));
+        if (!top) {
+          const descriptor = Object.getOwnPropertyDescriptor(realm, "fetch");
+          if (descriptor && "value" in descriptor && descriptor.writable && typeof descriptor.value === "function") {
+            const wrapped = wrapFetch(realm, descriptor.value, () => entry.active());
+            Object.defineProperty(realm, "fetch", { ...descriptor, value: wrapped });
+            entry.restore.push(() => {
+              if (Object.getOwnPropertyDescriptor(realm, "fetch")?.value === wrapped) Object.defineProperty(realm, "fetch", descriptor);
+            });
+          }
+        }
+        const windowGetter = Object.getOwnPropertyDescriptor(prototype, "contentWindow")?.get;
+        const protectFrame = (frame) => {
+          if (!entry.active() || !windowGetter) return;
+          try {
+            if (!frames.has(frame)) {
+              const listener = () => protectFrame(frame);
+              const record2 = { frame, listener, remove: realm.EventTarget.prototype.removeEventListener };
+              Reflect.apply(realm.EventTarget.prototype.addEventListener, frame, ["load", listener, true]);
+              frames.set(frame, record2);
+              for (const ref of frameRecords) if (!ref.deref()) frameRecords.delete(ref);
+              frameRecords.add(new WeakRef(record2));
+            }
+            const child = Reflect.apply(windowGetter, frame, []);
+            if (child) protectRealm(child);
+          } catch {
+          }
+        };
+        for (const key of ["contentWindow", "contentDocument"]) {
+          const descriptor = Object.getOwnPropertyDescriptor(prototype, key);
+          if (!descriptor?.configurable || !descriptor.get) continue;
+          const wrapped = new Proxy(descriptor.get, { apply(target, receiver, args) {
+            const value = Reflect.apply(target, receiver, args);
+            protectFrame(receiver);
+            return value;
+          } });
+          Object.defineProperty(prototype, key, { ...descriptor, get: wrapped });
+          entry.restore.push(() => {
+            if (Object.getOwnPropertyDescriptor(prototype, key)?.get === wrapped) Object.defineProperty(prototype, key, descriptor);
+          });
+        }
+        const nodeType = Object.getOwnPropertyDescriptor(realm.Node.prototype, "nodeType")?.get;
+        const localName = Object.getOwnPropertyDescriptor(realm.Element.prototype, "localName")?.get;
+        const elementQuery = realm.Element.prototype.querySelectorAll;
+        const fragmentQuery = realm.DocumentFragment.prototype.querySelectorAll;
+        const framesIn = (value) => {
+          try {
+            const type = nodeType && Reflect.apply(nodeType, value, []);
+            if (type === 1) {
+              if (localName && Reflect.apply(localName, value, []) === "iframe") return [value];
+              return Array.from(Reflect.apply(elementQuery, value, ["iframe"]));
+            }
+            if (type === 11) return Array.from(Reflect.apply(fragmentQuery, value, ["iframe"]));
+          } catch {
+          }
+          return [];
+        };
+        const parentNode = Object.getOwnPropertyDescriptor(realm.Node.prototype, "parentNode")?.get;
+        const insertionMethods = [
+          ...["appendChild", "insertBefore", "replaceChild"].map((key) => [realm.Node.prototype, key]),
+          ...["append", "prepend", "replaceChildren", "insertAdjacentElement", "before", "after", "replaceWith", "insertAdjacentHTML"].map((key) => [realm.Element.prototype, key])
+        ];
+        for (const [owner, key] of insertionMethods) {
+          const descriptor = Object.getOwnPropertyDescriptor(owner, key);
+          if (!descriptor?.configurable || typeof descriptor.value !== "function") continue;
+          const wrapped = new Proxy(descriptor.value, { apply(target, receiver, args) {
+            const frames2 = entry.active() ? args.flatMap(framesIn) : [];
+            const value = Reflect.apply(target, receiver, args);
+            if (entry.active() && key === "insertAdjacentHTML") {
+              let parent;
+              try {
+                if (parentNode) parent = Reflect.apply(parentNode, receiver, []);
+              } catch {
+              }
+              frames2.push(...framesIn(parent ?? receiver));
+            }
+            for (const frame of frames2) protectFrame(frame);
+            return value;
+          } });
+          Object.defineProperty(owner, key, { ...descriptor, value: wrapped });
+          entry.restore.push(() => {
+            if (Object.getOwnPropertyDescriptor(owner, key)?.value === wrapped) Object.defineProperty(owner, key, descriptor);
+          });
+        }
+        for (const key of ["innerHTML", "outerHTML"]) {
+          const owner = realm.Element.prototype;
+          const descriptor = Object.getOwnPropertyDescriptor(owner, key);
+          if (!descriptor?.configurable || !descriptor.set) continue;
+          const wrapped = new Proxy(descriptor.set, { apply(target, receiver, args) {
+            let parent;
+            if (entry.active() && key === "outerHTML") try {
+              if (parentNode) parent = Reflect.apply(parentNode, receiver, []);
+            } catch {
+            }
+            const value = Reflect.apply(target, receiver, args);
+            if (entry.active() && (typeof args[0] !== "string" || /<iframe[\s>]/i.test(args[0]))) {
+              for (const frame of framesIn(key === "outerHTML" ? parent : receiver)) protectFrame(frame);
+            }
+            return value;
+          } });
+          Object.defineProperty(owner, key, { ...descriptor, set: wrapped });
+          entry.restore.push(() => {
+            if (Object.getOwnPropertyDescriptor(owner, key)?.set === wrapped) Object.defineProperty(owner, key, descriptor);
+          });
+        }
+        for (const frame of Array.from(realm.document.querySelectorAll("iframe"))) protectFrame(frame);
+      } catch {
+      }
+    }
+    return {
+      start() {
+        if (!started) {
+          started = true;
+          protectRealm(root, true);
+        }
+      },
+      stop() {
+        started = false;
+        for (const ref of records) {
+          const record2 = ref.deref();
+          if (record2) for (const restore of record2.restore.reverse()) {
+            try {
+              restore();
+            } catch {
+            }
+          }
+        }
+        records.clear();
+        realms = /* @__PURE__ */ new WeakMap();
+        for (const ref of frameRecords) {
+          const record2 = ref.deref();
+          if (record2) try {
+            Reflect.apply(record2.remove, record2.frame, ["load", record2.listener, true]);
+          } catch {
+          }
+        }
+        frameRecords.clear();
+        frames = /* @__PURE__ */ new WeakMap();
+      }
+    };
+  }
+
   // src/youtube/main.ts
   (() => {
     const scope = window;
     const eventName = "noir-youtube-config-v1";
+    const pageOrigin = location.origin;
+    const MainResponse = Response, MainHeaders = Headers;
+    const hasInstance = Function.prototype[Symbol.hasInstance];
     let enabled = false, lease = 0;
     let originalFetch, wrappedFetch;
     let originalDescriptor;
@@ -117,6 +295,26 @@
     let initialView;
     let getter;
     const xhrHooks = [];
+    const active = () => enabled && Date.now() <= lease;
+    const wrapFetch = (realm, original, usable = active) => {
+      const ResponseType = realm.Response, HeadersType = realm.Headers;
+      const sourceDocument = realm.document;
+      return new Proxy(original, { apply(target, receiver, args) {
+        const promise = Reflect.apply(target, receiver, args);
+        if (!usable()) return promise;
+        try {
+          if (!playerEndpoint(args[0], sourceDocument.baseURI, pageOrigin)) return promise;
+        } catch {
+          return promise;
+        }
+        return promise.then((response) => {
+          if (Reflect.apply(hasInstance, MainResponse, [response])) return filterPlayerResponse(response, usable, MainResponse, MainHeaders);
+          if (Reflect.apply(hasInstance, ResponseType, [response])) return filterPlayerResponse(response, usable, ResponseType, HeadersType);
+          return response;
+        });
+      } });
+    };
+    const frameHooks = blankFrameHooks(window, active, wrapFetch);
     const clean = (value) => {
       if (!enabled || Date.now() > lease) return value;
       try {
@@ -128,14 +326,9 @@
     function install() {
       if (wrappedFetch) return;
       originalFetch = window.fetch;
-      wrappedFetch = new Proxy(originalFetch, {
-        apply(target, receiver, args) {
-          const promise = Reflect.apply(target, receiver, args);
-          if (!enabled || !playerEndpoint(args[0], location.href)) return promise;
-          return promise.then((response) => filterPlayerResponse(response, () => enabled && Date.now() <= lease));
-        }
-      });
+      wrappedFetch = wrapFetch(window, originalFetch);
       window.fetch = wrappedFetch;
+      frameHooks.start();
       for (const key of ["response", "responseText"]) {
         const original = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, key);
         if (!original?.configurable || !original.get) continue;
@@ -178,6 +371,7 @@
     }
     function uninstall() {
       enabled = false;
+      frameHooks.stop();
       if (window.fetch === wrappedFetch && originalFetch) window.fetch = originalFetch;
       for (const hook of xhrHooks) {
         if (Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, hook.key)?.get === hook.get) Object.defineProperty(XMLHttpRequest.prototype, hook.key, hook.original);

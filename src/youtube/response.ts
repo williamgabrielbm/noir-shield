@@ -1,7 +1,7 @@
 // TypeScript, file: src/youtube/response.ts, target: Chromium 121+ MAIN world.
 import {sanitizePlayerPayload} from './data';
 const MAX_BYTES = 4_000_000;
-export async function filterPlayerResponse(response: Response, active: () => boolean): Promise<Response> {
+export async function filterPlayerResponse(response: Response, active: () => boolean, ResponseType: typeof Response = Response, HeadersType: typeof Headers = Headers): Promise<Response> {
   if (!active() || !response.ok || !response.headers.get('content-type')?.includes('application/json')) return response;
   if (Number(response.headers.get('content-length')) > MAX_BYTES) return response;
   const copy = response.clone();
@@ -24,7 +24,7 @@ export async function filterPlayerResponse(response: Response, active: () => boo
     const data: unknown = JSON.parse(new TextDecoder().decode(bytes));
     const next = sanitizePlayerPayload(data);
     if (next === data || !active()) return response;
-    const headers = new Headers(response.headers);
+    const headers = new HeadersType(response.headers);
     // Fetch delivers decoded bytes. These wire headers no longer describe this body.
     for (const name of ['content-length','content-encoding','etag','content-md5','digest']) headers.delete(name);
     const decorate = (item: Response): Response => {
@@ -37,7 +37,7 @@ export async function filterPlayerResponse(response: Response, active: () => boo
       });
       return item;
     };
-    return decorate(new Response(JSON.stringify(next), {status:response.status,statusText:response.statusText,headers}));
+    return decorate(new ResponseType(JSON.stringify(next), {status:response.status,statusText:response.statusText,headers}));
   } catch {
     // Original body is never consumed; parse/network failure preserves native response.
     void reader.cancel().catch(() => {});

@@ -1,5 +1,14 @@
 # Histórico de versões
 
+## Em investigação — iframes, 2026-10-29
+
+- Corrige a seleção de endpoints com Request e URL de outro realm por getters nativos, sem acessar getters arbitrários de objetos.
+- Aplica o filtro fetch a iframes vazios acessíveis, incluindo APIs emprestadas, inserções síncronas e navegação do WindowProxy.
+- Preserva o realm efetivo da Response, inclusive fetch do iframe vinculado ao pai depois de remover o iframe.
+- Restaura propriedades pertencentes ao motor em pausa/allowlist; preserva alterações posteriores de terceiros.
+- Acrescenta contratos de iframe no Chrome, incluindo GC, clones, streams e navegação.
+- A correção de cobertura não comprova por si só a resolução do aviso anti-adblock relatado. Não é uma nova versão publicada.
+
 ## 0.2.3 beta — 2026-10-28
 
 - Corrige o caminho SPA /youtubei/v1/get_watch, incluindo o envelope explícito com playerResponse, preservando os demais dados de navegação.

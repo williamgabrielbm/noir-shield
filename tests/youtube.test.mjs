@@ -27,6 +27,18 @@ test('only exact same-origin player API is eligible',()=>{
   for(const value of ['/youtubei/v1/player?prettyPrint=false',new Request('https://www.youtube.com/youtubei/v1/player')])assert.equal(playerEndpoint(value,base),true);
   for(const value of ['/youtubei/v1/player-extra','/youtubei/v1/next','https://evil.example/youtubei/v1/player','https://www.youtube.com.evil.example/youtubei/v1/player','https://googlevideo.com/videoplayback'])assert.equal(playerEndpoint(value,base),false);
 });
+test('endpoint input brand checks do not execute arbitrary url/href getters',()=>{
+ const base='https://www.youtube.com/watch?v=fixture';let reads=0;
+ const spoof={get url(){reads++;return 'https://www.youtube.com/youtubei/v1/player';},get href(){reads++;return this.url;}};
+ for(const input of [spoof,{},null,undefined,42])assert.equal(playerEndpoint(input,base),false);
+ assert.equal(reads,0);assert.equal(playerEndpoint(new URL('/youtubei/v1/player',base),base),true);
+});
+test('frame base URL cannot broaden the allowed player origin',()=>{
+ const allowed='https://www.youtube.com',foreign='https://example.com/frame';
+ assert.equal(playerEndpoint('/youtubei/v1/player',foreign,allowed),false);
+ assert.equal(playerEndpoint(allowed+'/youtubei/v1/player',foreign,allowed),true);
+ assert.equal(playerEndpoint('https://example.com/youtubei/v1/player',allowed,allowed),false);
+});
 
 test('get_watch array filters only explicit playerResponse envelopes',()=>{
  const player=fixture(),watchNextResponse={adSlots:['ordinary nested content'],keep:true};

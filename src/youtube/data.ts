@@ -45,9 +45,20 @@ export function sanitizePlayerPayload(value: unknown): unknown {
   });
   return changed ? next : value;
 }
-export function playerEndpoint(input: unknown, base: string): boolean {
+const requestUrl = Object.getOwnPropertyDescriptor(Request.prototype, 'url')?.get;
+const urlHref = Object.getOwnPropertyDescriptor(URL.prototype, 'href')?.get;
+function requestAddress(input: unknown): string | undefined {
+  if (typeof input === 'string') return input;
+  // Native brand checks accept another realm's Request/URL without trusting an arbitrary .url getter.
+  try {if (requestUrl) return Reflect.apply(requestUrl, input, []) as string;} catch { /* Not a Request. */ }
+  try {if (urlHref) return Reflect.apply(urlHref, input, []) as string;} catch { /* Not a URL. */ }
+  return undefined;
+}
+export function playerEndpoint(input: unknown, base: string, allowedOrigin?: string): boolean {
   try {
-    const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input instanceof Request ? input.url : '', base);
-    return url.origin === new URL(base).origin && (url.pathname === '/youtubei/v1/player' || url.pathname === '/youtubei/v1/get_watch' || url.pathname === '/youtubei/v1/reel/reel_watch_sequence');
+    const address = requestAddress(input);
+    if (address === undefined) return false;
+    const url = new URL(address, base);
+    return url.origin === (allowedOrigin ?? new URL(base).origin) && (url.pathname === '/youtubei/v1/player' || url.pathname === '/youtubei/v1/get_watch' || url.pathname === '/youtubei/v1/reel/reel_watch_sequence');
   } catch { return false; }
 }

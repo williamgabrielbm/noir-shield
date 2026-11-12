@@ -19,7 +19,8 @@
     "test:youtube:long": "node tests/long-session.mjs",
     "test:youtube:formats": "node tests/formats-session.mjs",
     "test:youtube:midroll": "node tests/midroll-hidden.mjs",
-    "test:youtube:chrome": "powershell -NoProfile -File tests/run-chrome.ps1"
+    "test:youtube:chrome": "powershell -NoProfile -File tests/run-chrome.ps1",
+    "test:youtube:frames": "powershell -NoProfile -File tests/run-chrome.ps1 -Script tests/youtube-frames-e2e.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.321",

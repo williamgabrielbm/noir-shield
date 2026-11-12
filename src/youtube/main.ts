@@ -1,9 +1,13 @@
 import {playerEndpoint, sanitizePlayerPayload} from './data';
 import {filterPlayerResponse} from './response';
+import {blankFrameHooks, type FetchRealm} from './frames';
 
 (() => {
   const scope = window as Window & {ytInitialPlayerResponse?: unknown};
   const eventName = 'noir-youtube-config-v1';
+  const pageOrigin = location.origin;
+  const MainResponse = Response, MainHeaders = Headers;
+  const hasInstance = Function.prototype[Symbol.hasInstance];
   let enabled = false, lease = 0;
   let originalFetch: typeof fetch | undefined, wrappedFetch: typeof fetch | undefined;
   let originalDescriptor: PropertyDescriptor | undefined;
@@ -11,6 +15,26 @@ import {filterPlayerResponse} from './response';
   let initialView: unknown;
   let getter: (() => unknown) | undefined;
   const xhrHooks: {key:'response'|'responseText'; original:PropertyDescriptor; get:()=>unknown}[] = [];
+  const active = () => enabled && Date.now() <= lease;
+  const wrapFetch = (realm:FetchRealm, original:typeof fetch, usable:()=>boolean = active):typeof fetch => {
+    const ResponseType = realm.Response, HeadersType = realm.Headers;
+    const sourceDocument = realm.document;
+    return new Proxy(original, {apply(target, receiver, args) {
+      const promise = Reflect.apply(target, receiver, args) as Promise<Response>;
+      if (!usable()) return promise;
+      try {
+        if (!playerEndpoint(args[0], sourceDocument.baseURI, pageOrigin)) return promise;
+      } catch {return promise;}
+      return promise.then(response => {
+        // A fetch borrowed from a frame and bound to the parent returns a parent-realm Response.
+        // Rebuilding it in a removed iframe realm makes subsequent body reads fail in Chromium.
+        if (Reflect.apply(hasInstance, MainResponse, [response])) return filterPlayerResponse(response, usable, MainResponse, MainHeaders);
+        if (Reflect.apply(hasInstance, ResponseType, [response])) return filterPlayerResponse(response, usable, ResponseType, HeadersType);
+        return response;
+      });
+    }});
+  };
+  const frameHooks = blankFrameHooks(window, active, wrapFetch);
   const clean = (value: unknown) => {
     if (!enabled || Date.now() > lease) return value;
     try { return sanitizePlayerPayload(value); } catch { return value; }
@@ -18,14 +42,9 @@ import {filterPlayerResponse} from './response';
   function install() {
     if (wrappedFetch) return;
     originalFetch = window.fetch;
-    wrappedFetch = new Proxy(originalFetch, {
-      apply(target, receiver, args) {
-        const promise = Reflect.apply(target, receiver, args) as Promise<Response>;
-        if (!enabled || !playerEndpoint(args[0], location.href)) return promise;
-        return promise.then(response => filterPlayerResponse(response, () => enabled && Date.now() <= lease));
-      }
-    });
+    wrappedFetch = wrapFetch(window, originalFetch);
     window.fetch = wrappedFetch;
+    frameHooks.start();
     for (const key of ['response', 'responseText'] as const) {
       const original = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, key);
       if (!original?.configurable || !original.get) continue;
@@ -58,6 +77,7 @@ import {filterPlayerResponse} from './response';
   }
   function uninstall() {
     enabled = false;
+    frameHooks.stop();
     if (window.fetch === wrappedFetch && originalFetch) window.fetch = originalFetch;
     for (const hook of xhrHooks) {
       if (Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, hook.key)?.get === hook.get) Object.defineProperty(XMLHttpRequest.prototype, hook.key, hook.original);
